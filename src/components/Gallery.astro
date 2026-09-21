@@ -38,6 +38,7 @@ const items = photos.map((photo, i) => {
     items.map(({ photo, i, anchor }) => (
       <div
         class:list={['gallery__item', { 'gallery__item--anchor': anchor }]}
+        data-orientation={photo.orientation}
         style={`--ar:${photo.aspectRatio.toFixed(4)}`}
       >
         <div class="reveal" style={`--reveal-delay:${Math.min(i, 3) * 70}ms`}>
@@ -67,7 +68,9 @@ const items = photos.map((photo, i) => {
     display: flex;
     flex-wrap: wrap;
     gap: var(--gallery-gap);
-    --row-h: 60vh;
+    /* Target row height. It must stay well under the container width, or every
+       flex-basis exceeds the row and each photo ends up alone on its own line. */
+    --row-h: 0;
   }
 
   .gallery__item {
@@ -78,6 +81,12 @@ const items = photos.map((photo, i) => {
   }
 
   .gallery__item--anchor { flex-basis: 100%; }
+
+  /* A photo left alone on a row is grown to fill it, which turns a 4:5 portrait
+     into a 1500px-tall wall of image. Cap how far a single frame may grow; the
+     cap only ever binds on an under-filled row. */
+  .gallery__item[data-orientation='portrait'] { max-width: 48%; }
+  .gallery__item[data-orientation='square'] { max-width: 60%; }
 
   .gallery__filler {
     flex-grow: 999999;
@@ -92,18 +101,19 @@ const items = photos.map((photo, i) => {
     .gallery { --row-h: 0; }
     .gallery__item,
     .gallery__item--anchor { flex-basis: 100%; }
+    .gallery__item[data-orientation] { max-width: 100%; }
     .gallery__filler { display: none; }
   }
 
   @media (min-width: 48rem) {
-    .gallery { --row-h: 44vh; }
+    .gallery { --row-h: 26vw; }
   }
 
   @media (min-width: 64rem) {
-    .gallery { --row-h: 52vh; }
+    .gallery { --row-h: 28vw; }
   }
 
   @media (min-width: 90rem) {
-    .gallery { --row-h: 58vh; }
+    .gallery { --row-h: clamp(380px, 26vw, 520px); }
   }
 </style>

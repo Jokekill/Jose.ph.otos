@@ -81,6 +81,11 @@ const Tag = interactive ? 'button' : 'figure';
     margin: 0;
     padding: 0;
     background: var(--c-bg-sunken);
+    /* A high-key photograph — a product on white, a bright wedding frame —
+       otherwise dissolves into the white page and reads as an empty slot.
+       An inset hairline gives it an edge without adding a visible border:
+       it is invisible over a dark photo and takes up no layout space. */
+    box-shadow: inset 0 0 0 1px rgba(16, 16, 16, 0.07);
     /* Reserving the box from the known ratio is what keeps CLS at zero. */
     aspect-ratio: var(--ar);
     overflow: hidden;
@@ -96,8 +101,10 @@ const Tag = interactive ? 'button' : 'figure';
     width: 100%;
     height: 100%;
     object-fit: cover;
-    /* A hair of scale on hover — the only effect applied to a photograph. */
-    transition: transform var(--dur-slow) var(--ease), opacity var(--dur) var(--ease);
+    /* Opacity, not scale. The reference site never resizes a photograph on
+       hover; it only dims it, so the crop the photographer chose is what you
+       keep seeing. */
+    transition: opacity var(--dur) var(--ease);
   }
 
   .photo--interactive {
@@ -108,7 +115,7 @@ const Tag = interactive ? 'button' : 'figure';
   }
 
   @media (hover: hover) {
-    .photo--interactive:hover .photo__img { transform: scale(1.018); }
+    .photo--interactive:hover .photo__img { opacity: 0.78; }
   }
 
   .photo--interactive:focus-visible {
@@ -118,6 +125,5 @@ const Tag = interactive ? 'button' : 'figure';
 
   @media (prefers-reduced-motion: reduce) {
     .photo__img { transition: none; }
-    .photo--interactive:hover .photo__img { transform: none; }
   }
 </style>

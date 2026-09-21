@@ -13,14 +13,14 @@ const featured = featuredPhotos(7);
 <BaseLayout flush>
   <!-- Masthead: name, craft, claim, place. Four lines, then photography. -->
   <section class="masthead shell">
-    <p class="label masthead__eyebrow">{site.name} — {site.role}</p>
-    <h1 class="masthead__claim serif">{site.claim}</h1>
-    <p class="masthead__place">{site.location}</p>
+    <p class="label masthead__eyebrow reveal">{site.name} — {site.role}</p>
+    <h1 class="masthead__claim serif reveal" style="--reveal-delay:120ms">{site.claim}</h1>
+    <p class="masthead__place reveal" style="--reveal-delay:240ms">{site.location}</p>
   </section>
 
   {
     hero && (
-      <section class="hero shell shell--wide" aria-label="Úvodní fotografie">
+      <section class="hero shell shell--wide reveal" style="--reveal-delay:320ms" aria-label="Úvodní fotografie">
         <PhotoFigure
           photo={hero}
           priority
@@ -33,7 +33,7 @@ const featured = featuredPhotos(7);
   }
 
   <section class="section shell shell--wide" aria-labelledby="vybrane">
-    <div class="section-head">
+    <div class="section-head reveal">
       <h2 id="vybrane">Vybrané práce</h2>
       <a class="link link--quiet label" href={path('/portfolio/')}>Celé portfolio</a>
     </div>
@@ -41,7 +41,7 @@ const featured = featuredPhotos(7);
   </section>
 
   <section class="section shell shell--wide" aria-labelledby="oblasti">
-    <div class="section-head">
+    <div class="section-head reveal">
       <h2 id="oblasti">Co fotím</h2>
     </div>
 
@@ -50,7 +50,7 @@ const featured = featuredPhotos(7);
         activeCategories.map((category, i) => {
           const cover = categoryCover(category.slug);
           return (
-            <li class="cats__item reveal" style={`--reveal-delay:${Math.min(i, 3) * 70}ms`}>
+            <li class="cats__item reveal" style={`--reveal-delay:${Math.min(i, 4) * 90}ms`}>
               <a class="cats__link" href={path(`/portfolio/${category.slug}/`)}>
                 {cover && (
                   <PhotoFigure
@@ -72,11 +72,11 @@ const featured = featuredPhotos(7);
   </section>
 
   <section class="section shell shell--content closing">
-    <p class="lead">
+    <p class="lead reveal">
       Máte v hlavě focení, o kterém zatím nevíte, jak přesně má vypadat? To je úplně
       v pořádku — většinou se to vyjasní během pár zpráv.
     </p>
-    <a class="cta" href={path('/kontakt/')}>
+    <a class="cta reveal" style="--reveal-delay:100ms" href={path('/kontakt/')}>
       Napsat Pepovi
       <span class="cta__arrow" aria-hidden="true">→</span>
     </a>
@@ -154,10 +154,7 @@ const featured = featuredPhotos(7);
   .cats__link :global(.photo) { aspect-ratio: 4 / 5; }
 
   @media (hover: hover) {
-    .cats__link :global(.photo__img) {
-      transition: transform var(--dur-slow) var(--ease);
-    }
-    .cats__link:hover :global(.photo__img) { transform: scale(1.02); }
+    .cats__link:hover :global(.photo__img) { opacity: 0.78; }
   }
 
   .cats__link:focus-visible {
@@ -183,7 +180,5 @@ const featured = featuredPhotos(7);
     .cats__item:first-child :global(.photo) { aspect-ratio: 16 / 10; }
   }
 
-  @media (prefers-reduced-motion: reduce) {
-    .cats__link:hover :global(.photo__img) { transform: none; }
-  }
+
 </style>

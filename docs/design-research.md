@@ -1,20 +1,72 @@
 # Design research
 
-> **Status of this document.** The reference sites named in the brief
-> (misha.photo, Martin Faltejsek, janhvizdalphotography.com, jansebek.cz,
-> davidvancisin.cz) **could not be opened from the build environment** — its
-> network policy allows package registries only and answered `403` to every
-> other host. So this is not a first-hand visual teardown of those sites.
+> **Status of this document.**
 >
-> What it *is*: the design direction derived from (a) the client's own explicit
-> statements in the brief, and (b) established conventions of minimal
-> photographer portfolios. Everything here is a decision we can defend and
-> change.
+> The reference sites still cannot be opened from the build environment — its
+> network policy allows package registries only and answers `403` to every
+> other host. **However, the client supplied a saved copy of misha.photo**, so
+> section 1b below is measured from that page's real CSS rather than guessed.
 >
-> **Outstanding:** a first-hand pass over the reference sites, ideally with the
-> client pointing at specific things they like. See AGENT_PROGRESS.md →
-> Open questions. Until then, do not re-run this research — it will hit the
-> same wall.
+> Martin Faltejsek's site has never been supplied as a URL and remains
+> un-analysed. The three secondary references are likewise unseen.
+
+---
+
+## 1b. misha.photo — measured from the client's saved copy
+
+This is fact, read out of the page's stylesheet, not interpretation.
+
+### Typefaces
+
+| Font | Uses | Role |
+| --- | --- | --- |
+| **Montserrat** | 77 | Almost everything: body, labels, subheadings |
+| Noir et Blanc Regular | 5 | Main menu, one footer heading |
+| Butler Light | 3 | A few display lines in the footer |
+
+The site is, in practice, **a Montserrat site** with two accent faces used in a
+handful of places.
+
+```
+st-d-paragraph   Montserrat 300 · 14px · lh 1.6 · tracking 0.03em
+st-d-subheading  Montserrat 400 · 14px · lh 1.6 · tracking 0.2em · UPPERCASE
+st-d-title       36px · lh 1.4 · tracking 0em
+st-d-heading     26px · lh 1.4 · tracking -0.05em
+menu             Noir 400 · 22px · tracking 0.2em
+footer heading   Noir 400 · 45px · tracking 0.3em
+```
+
+Tracking distribution across the whole page: `0.2em` (56×), `0em` (10×),
+`0.03em` (2×), `0.3em` (2×). **Wide-tracked uppercase is the single strongest
+signature of the design** — more than the choice of typeface itself.
+
+### Motion
+
+The entire site's animation vocabulary:
+
+- **One duration: `0.5s`** — 280 occurrences, no exceptions.
+- **Animated properties: `opacity` (188), `color` (77), `fill` (10).** Nothing
+  else. No `transform` transitions at all.
+- **No `@keyframes` anywhere. No timing function declared**, so everything runs
+  on the browser default `ease`.
+- Hover on a text link: `text-decoration: underline` plus a colour change.
+
+So: it does not move, it fades. Scale, slide and rise are absent entirely.
+
+### What we took, and what we did not
+
+- **Took:** Montserrat (OFL, so we self-host the genuine article), the light
+  weight for running text, the 0.2em uppercase tracking, the 0.5s
+  opacity-and-colour-only motion vocabulary.
+- **Did not take:** Noir et Blanc and Butler. Their `.woff` files are served
+  from that site's builder CDN and licensed to it — copying them onto a
+  different domain is not ours to do. Bodoni Moda (OFL) stands in for Butler
+  in the same minor display role.
+- **Did not take:** the builder's background parallax (`bgScroll: "p"`). The
+  brief rules out aggressive parallax and the client asked for restraint.
+- **Added:** wider reach and a stagger. The reference fades a handful of
+  elements; we fade section heads, galleries, pricing rows and contact
+  details, cascaded 90ms apart. More things move, in the same language.
 
 ---
 
@@ -44,16 +96,20 @@ These are direct constraints, not interpretation:
 5. **Native aspect ratios are preserved.** Portraits stay portrait. Nothing is
    cropped into a uniform grid to make a layout tidy.
 6. **Mobile is the primary design target**, not a shrunken desktop.
-7. **Motion is almost absent.** A short fade-and-rise on scroll, a hair of
-   scale on hover. Nothing that delays or obstructs a photograph.
+7. **Motion is almost absent, and it only ever fades.** Opacity and colour at
+   0.5s — measured from the reference, which animates nothing else. No rise,
+   no scale, no parallax. Nothing that delays or obstructs a photograph.
 
 ## 3. What we use
 
 - **White background** (`#ffffff`) everywhere except the lightbox.
 - **Near-black text** (`#101010`) plus two greys for hierarchy.
-- **Inter** (variable) for UI and body; **Instrument Serif** for the claim and a
-  few large lines. Both self-hosted with latin + latin-ext so Czech diacritics
-  render in the real typeface rather than a fallback.
+- **Montserrat** (variable, light 300 for running text) for everything, with
+  **Bodoni Moda** as the display accent — the same split the reference uses.
+  Both self-hosted and subset to latin + latin-ext, so Czech diacritics render
+  in the real typeface rather than a fallback.
+- **Uppercase labels and navigation tracked at 0.2em.** This one value carries
+  most of the reference's character.
 - **Justified gallery rows.** Each photo's flex-basis is proportional to its
   aspect ratio, so a row's photos share one height while each keeps its native
   ratio. No cropping, no JS measuring pass.
@@ -62,6 +118,10 @@ These are direct constraints, not interpretation:
 - **A dark lightbox.** The only dark surface on the site — it removes the page
   so the photograph is alone.
 - **Text links underlined by a sliding rule**; CTAs are a rule and a word.
+- **An inset hairline on every photograph** (`rgba(16,16,16,0.07)`). Invisible
+  over a dark frame; it stops a high-key photograph — a product on white, a
+  bright wedding frame — from dissolving into the white page and reading as an
+  empty slot. Costs no layout space and is not card UI.
 
 ## 4. What we deliberately do not use
 

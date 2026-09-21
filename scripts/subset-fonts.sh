@@ -12,15 +12,15 @@
 # changing the glyph coverage or updating the typefaces:
 #
 #   pip install fonttools brotli
-#   npm install --no-save @fontsource-variable/inter @fontsource/instrument-serif
+#   npm install --no-save @fontsource-variable/montserrat @fontsource-variable/bodoni-moda
 #   bash scripts/subset-fonts.sh
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
-for dir in node_modules/@fontsource-variable/inter node_modules/@fontsource/instrument-serif; do
+for dir in node_modules/@fontsource-variable/montserrat node_modules/@fontsource-variable/bodoni-moda; do
   [ -d "$dir" ] || {
     echo "Missing $dir — run:" >&2
-    echo "  npm install --no-save @fontsource-variable/inter @fontsource/instrument-serif" >&2
+    echo "  npm install --no-save @fontsource-variable/montserrat @fontsource-variable/bodoni-moda" >&2
     exit 1
   }
 done
@@ -51,15 +51,15 @@ subset () {
     $((before / 1024)) $((after / 1024))
 }
 
-IN_INTER=node_modules/@fontsource-variable/inter/files
-IN_SERIF=node_modules/@fontsource/instrument-serif/files
+IN_SANS=node_modules/@fontsource-variable/montserrat/files
+IN_SERIF=node_modules/@fontsource-variable/bodoni-moda/files
 
 echo "Subsetting fonts:"
-subset "$IN_INTER/inter-latin-wght-normal.woff2" \
-       public/fonts/inter-latin-wght-normal.woff2 "$LATIN"
-subset "$IN_INTER/inter-latin-ext-wght-normal.woff2" \
-       public/fonts/inter-latin-ext-wght-normal.woff2 "$LATIN_EXT"
-subset "$IN_SERIF/instrument-serif-latin-400-normal.woff2" \
-       public/fonts/instrument-serif-latin-400-normal.woff2 "$LATIN"
-subset "$IN_SERIF/instrument-serif-latin-ext-400-normal.woff2" \
-       public/fonts/instrument-serif-latin-ext-400-normal.woff2 "$LATIN_EXT"
+subset "$IN_SANS/montserrat-latin-wght-normal.woff2" \
+       public/fonts/montserrat-latin-wght-normal.woff2 "$LATIN"
+subset "$IN_SANS/montserrat-latin-ext-wght-normal.woff2" \
+       public/fonts/montserrat-latin-ext-wght-normal.woff2 "$LATIN_EXT"
+subset "$IN_SERIF/bodoni-moda-latin-wght-normal.woff2" \
+       public/fonts/bodoni-moda-latin-wght-normal.woff2 "$LATIN"
+subset "$IN_SERIF/bodoni-moda-latin-ext-wght-normal.woff2" \
+       public/fonts/bodoni-moda-latin-ext-wght-normal.woff2 "$LATIN_EXT"

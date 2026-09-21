@@ -15,7 +15,7 @@ const portrait = photos.find((p) => p.category === 'portrety' && p.orientation =
 >
   <div class="about shell shell--wide">
     <div class="about__text">
-      <h1 class="about__lead serif">{about.lead}</h1>
+      <h1 class="about__lead serif reveal">{about.lead}</h1>
 
       {
         !about.textConfirmed && (
@@ -26,11 +26,11 @@ const portrait = photos.find((p) => p.category === 'portrety' && p.orientation =
         )
       }
 
-      <div class="prose">
+      <div class="prose reveal" style="--reveal-delay:120ms">
         {about.paragraphs.map((p) => <p>{p}</p>)}
       </div>
 
-      <dl class="facts">
+      <dl class="facts reveal" style="--reveal-delay:200ms">
         {
           about.facts.map((fact) => (
             <div class="facts__row">
@@ -47,7 +47,7 @@ const portrait = photos.find((p) => p.category === 'portrety' && p.orientation =
       </a>
     </div>
 
-    <div class="about__media">
+    <div class="about__media reveal" style="--reveal-delay:160ms">
       {
         portrait && (
           <PhotoFigure

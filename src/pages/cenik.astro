@@ -10,8 +10,8 @@ import { path } from '../lib/paths';
   description="Ceník focení — portréty, svatby, eventy, koncerty a produktové fotografie."
 >
   <section class="shell shell--content page-head">
-    <h1>Ceník</h1>
-    <p class="lead">
+    <h1 class="reveal">Ceník</h1>
+    <p class="lead reveal" style="--reveal-delay:120ms">
       Každé focení je trochu jiné, takže ceny berte jako výchozí bod. Přesnou
       nabídku vám rád pošlu, jakmile budu vědět, o co jde.
     </p>
@@ -29,8 +29,8 @@ import { path } from '../lib/paths';
   <div class="shell shell--content">
     <ul class="packages" role="list">
       {
-        pricing.map((item) => (
-          <li class="package reveal">
+        pricing.map((item, i) => (
+          <li class="package reveal" style={`--reveal-delay:${Math.min(i, 4) * 80}ms`}>
             <div class="package__head">
               <h2 class="package__title">{item.title}</h2>
               <p class="package__price">
@@ -54,7 +54,7 @@ import { path } from '../lib/paths';
       }
     </ul>
 
-    <div class="cenik-cta">
+    <div class="cenik-cta reveal">
       <hr class="rule" />
       <p class="lead">Nenašli jste to, co hledáte?</p>
       <a class="cta" href={path('/kontakt/')}>

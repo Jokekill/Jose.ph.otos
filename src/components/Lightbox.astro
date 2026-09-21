@@ -54,29 +54,42 @@ const { galleryId } = Astro.props;
     background: var(--c-lightbox-bg);
     color: var(--c-lightbox-ink);
     display: grid;
-    grid-template-rows: 1fr auto auto;
+    /* minmax(0, 1fr), not 1fr: a plain `1fr` row has an automatic minimum of
+       its content's size, so a tall photograph forces the row past the
+       viewport and max-height on the image never binds. */
+    grid-template-rows: minmax(0, 1fr) auto auto;
     opacity: 0;
     transition: opacity var(--dur) var(--ease);
     touch-action: pan-y;
+    --lb-pad: clamp(0.75rem, 0.3rem + 1.8vw, 2.5rem);
   }
 
   .lightbox[hidden] { display: none; }
   .lightbox.is-open { opacity: 1; }
 
   .lightbox__stage {
-    display: grid;
-    place-items: center;
+    position: relative;
     min-height: 0;
-    padding: clamp(0.75rem, 0.3rem + 1.8vw, 2.5rem);
-    padding-bottom: 0;
   }
 
+  /* Bounding a photograph here is fiddlier than it looks:
+     - `max-height: 100%` on a centred grid item does not resolve against the
+       grid row, so a 2:3 portrait ran off the bottom of the screen;
+     - an absolutely positioned *replaced* element ignores its insets when
+       width/height are auto, and uses its intrinsic size instead.
+     Filling the stage and letting padding shrink the content box does work:
+     object-fit contains the photo inside the content box, and the global
+     border-box sizing keeps the padding inside the 100%.
+     pointer-events: none keeps click-to-close working across the whole
+     backdrop, including the letterbox margins beside the photo. */
   .lightbox__img {
-    max-width: 100%;
-    max-height: 100%;
-    width: auto;
-    height: auto;
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    padding: var(--lb-pad) var(--lb-pad) 0;
     object-fit: contain;
+    pointer-events: none;
     opacity: 0;
     transition: opacity var(--dur) var(--ease);
   }

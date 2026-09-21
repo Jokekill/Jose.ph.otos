@@ -87,7 +87,8 @@ import { path } from '../../lib/paths';
   }
 
   .areas__intro { margin-top: var(--s-1); }
-  .areas__count { margin-top: var(--s-3); color: var(--c-ink-faint); }
+  /* --c-ink-faint is decorative-only (2.6:1); this is 12px text and needs AA. */
+  .areas__count { margin-top: var(--s-3); color: var(--c-ink-muted); }
 
   /* Alternating asymmetry: wide photo on one side, text on the other, sides
      swapping down the page. Keeps the list from reading as a card grid. */

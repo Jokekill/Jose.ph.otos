@@ -60,15 +60,19 @@ const pathname = Astro.url.pathname;
         ))
       }
     </ul>
+    <p class="mobile-nav__foot label">{site.location}</p>
   </nav>
-  <p class="mobile-nav__foot label">{site.location}</p>
 </div>
 
 <style>
   .site-header {
     position: sticky;
     top: 0;
-    z-index: 100;
+    /* Above the mobile sheet (110). The header is a stacking context, so the
+       toggle's own z-index cannot lift it out — without this the close button
+       is painted underneath the open sheet and the menu cannot be dismissed
+       by touch at all. */
+    z-index: 120;
     background: var(--c-bg);
     transition: box-shadow var(--dur) var(--ease);
   }
@@ -78,6 +82,10 @@ const pathname = Astro.url.pathname;
   .site-header[data-scrolled] {
     box-shadow: 0 1px 0 var(--c-line);
   }
+
+  /* Scroll is locked while the sheet is open, so a leftover hairline would
+     just draw a rule across it. */
+  :global(html[data-nav-open]) .site-header { box-shadow: none; }
 
   .site-header__inner {
     display: flex;
@@ -125,7 +133,6 @@ const pathname = Astro.url.pathname;
     width: 44px;
     height: 44px;
     margin-right: -10px;
-    z-index: 120;
   }
 
   .nav-toggle__bars {
@@ -160,15 +167,19 @@ const pathname = Astro.url.pathname;
     z-index: 110;
     background: var(--c-bg);
     padding: calc(var(--header-h) + var(--s-7)) var(--gutter) var(--s-7);
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
+    display: grid;
     opacity: 0;
     transition: opacity var(--dur) var(--ease);
   }
 
   .mobile-nav[hidden] { display: none; }
   .mobile-nav.is-open { opacity: 1; }
+
+  .mobile-nav nav {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
 
   .mobile-nav ul {
     margin: 0;
@@ -241,6 +252,7 @@ const pathname = Astro.url.pathname;
       requestAnimationFrame(() => panel.classList.add('is-open'));
       toggle.setAttribute('aria-expanded', 'true');
       label.textContent = 'Zavřít menu';
+      document.documentElement.setAttribute('data-nav-open', '');
       document.body.style.overflow = 'hidden';
       panel.querySelector<HTMLAnchorElement>('a')?.focus();
     };
@@ -249,6 +261,7 @@ const pathname = Astro.url.pathname;
       panel.classList.remove('is-open');
       toggle.setAttribute('aria-expanded', 'false');
       label.textContent = 'Otevřít menu';
+      document.documentElement.removeAttribute('data-nav-open');
       document.body.style.overflow = '';
       const finish = () => {
         panel.hidden = true;

@@ -88,7 +88,11 @@ for (const vp of VIEWPORTS.filter((v) => !onlyVp || onlyVp.includes(v.name))) {
   const page = await context.newPage();
   page.on('pageerror', (e) => problems.push(`JS error @ ${vp.name}: ${e.message}`));
   page.on('console', (m) => {
-    if (m.type() === 'error') problems.push(`console @ ${vp.name} [${page.url()}]: ${m.text()}`);
+    if (m.type() !== 'error') return;
+    // The 404 page is served with a 404 status on purpose; the browser logs
+    // that as a failed resource. Everything else is a real problem.
+    if (page.url().includes('/neexistuje/') && m.text().includes('404')) return;
+    problems.push(`console @ ${vp.name} [${page.url()}]: ${m.text()}`);
   });
 
   for (const p of PAGES.filter((x) => !only || only.includes(x.name))) {

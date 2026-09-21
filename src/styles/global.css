@@ -62,7 +62,9 @@
   --c-bg-sunken: #fafafa;
   --c-ink: #101010;
   --c-ink-soft: #3d3d3d;
-  --c-ink-muted: #767676;   /* 4.6:1 on white — passes AA for body text */
+  --c-ink-muted: #6b6b6b;   /* 5.3:1 on white. #767676 measures 4.54:1, which
+                               rounds under 4.5:1 once composited — too close
+                               to the line for text this small. */
   --c-ink-faint: #a0a0a0;   /* decorative / large text only */
   --c-line: #e7e7e7;
   --c-line-strong: #101010;

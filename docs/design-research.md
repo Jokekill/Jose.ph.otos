@@ -120,6 +120,9 @@ whole site.
   screen readers announce it once rather than twice.
 - The lightbox is a labelled `role="dialog"` with focus moved in, focus
   trapped, and focus restored to the photograph that opened it.
-- `--c-ink-muted` (`#767676`) is the lightest grey allowed on body text
-  (4.6:1 on white). `--c-ink-faint` is for large or decorative text only.
+- `--c-ink-muted` (`#6b6b6b`, 5.3:1 on white) is the lightest grey allowed on
+  body text. It was originally `#767676`, which measures 4.54:1 — technically
+  over the 4.5:1 bar, but it rounds under once composited, so axe failed it on
+  13px text. Leave real headroom. `--c-ink-faint` is for large or decorative
+  text only, never for running text.
 - `prefers-reduced-motion` disables reveals, hover scaling and smooth scrolling.

@@ -72,5 +72,10 @@ export const contacts: ContactChannel[] = [
 /** Channels safe to render publicly right now (placeholders are hidden). */
 export const publicContacts = contacts.filter((c) => !c.placeholder);
 
-export const primaryContact =
-  contacts.find((c) => c.label === 'E-mail') ?? contacts[0]!;
+/**
+ * The address to offer as a direct "just write to me" shortcut — but only once
+ * it is real. While the e-mail is a placeholder this is `undefined`, and the
+ * pages that would have shown it fall back to linking the contact page. A
+ * made-up address must never be rendered as if a visitor could use it.
+ */
+export const directContact = publicContacts.find((c) => c.href.startsWith('mailto:'));

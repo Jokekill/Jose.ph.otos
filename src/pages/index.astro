@@ -2,7 +2,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import PhotoFigure from '../components/PhotoFigure.astro';
 import Gallery from '../components/Gallery.astro';
-import { site, primaryContact } from '../data/site';
+import { site, directContact } from '../data/site';
 import { heroPhoto, featuredPhotos, activeCategories, categoryCover } from '../data/portfolio';
 import { path } from '../lib/paths';
 
@@ -80,9 +80,16 @@ const featured = featuredPhotos(7);
       Napsat Pepovi
       <span class="cta__arrow" aria-hidden="true">→</span>
     </a>
-    <p class="closing__alt muted">
-      Nebo rovnou na <a class="link" href={primaryContact.href}>{primaryContact.value}</a>
-    </p>
+    {
+      directContact && (
+        <p class="closing__alt muted">
+          Nebo rovnou na{' '}
+          <a class="link" href={directContact.href}>
+            {directContact.value}
+          </a>
+        </p>
+      )
+    }
   </section>
 </BaseLayout>
 

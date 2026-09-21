@@ -1,0 +1,282 @@
+---
+import { nav, site } from '../data/site';
+import { path, isActive } from '../lib/paths';
+
+const pathname = Astro.url.pathname;
+---
+
+<header class="site-header" data-site-header>
+  <div class="site-header__inner shell">
+    <a class="brand" href={path('/')} aria-label={`${site.brand} — domů`}>
+      <span class="brand__mark">jose.ph.otos</span>
+    </a>
+
+    <nav class="nav-desktop" aria-label="Hlavní navigace">
+      <ul role="list">
+        {
+          nav.map((item) => (
+            <li>
+              <a
+                href={path(item.href)}
+                class:list={['nav-link', { 'is-current': isActive(item.href, pathname) }]}
+                aria-current={isActive(item.href, pathname) ? 'page' : undefined}
+              >
+                {item.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <button
+      class="nav-toggle"
+      type="button"
+      aria-expanded="false"
+      aria-controls="mobile-nav"
+      data-nav-toggle
+    >
+      <span class="visually-hidden" data-nav-toggle-label>Otevřít menu</span>
+      <span class="nav-toggle__bars" aria-hidden="true"><i></i><i></i></span>
+    </button>
+  </div>
+</header>
+
+<!-- Mobile navigation: a full-screen white sheet, not a dropdown. -->
+<div class="mobile-nav" id="mobile-nav" data-mobile-nav hidden>
+  <nav aria-label="Mobilní navigace">
+    <ul role="list">
+      {
+        nav.map((item, i) => (
+          <li style={`--i:${i}`}>
+            <a
+              href={path(item.href)}
+              class:list={['mobile-nav__link', { 'is-current': isActive(item.href, pathname) }]}
+              aria-current={isActive(item.href, pathname) ? 'page' : undefined}
+            >
+              {item.label}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </nav>
+  <p class="mobile-nav__foot label">{site.location}</p>
+</div>
+
+<style>
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: var(--c-bg);
+    transition: box-shadow var(--dur) var(--ease);
+  }
+
+  /* The hairline only appears once the page has scrolled — nothing frames the
+     first photograph. */
+  .site-header[data-scrolled] {
+    box-shadow: 0 1px 0 var(--c-line);
+  }
+
+  .site-header__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s-5);
+    min-height: var(--header-h);
+  }
+
+  .brand__mark {
+    font-size: var(--t-small);
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+  }
+
+  .nav-desktop { display: none; }
+
+  .nav-desktop ul {
+    display: flex;
+    gap: clamp(1.25rem, 0.5rem + 2vw, 2.75rem);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .nav-link {
+    font-size: var(--t-meta);
+    letter-spacing: var(--tr-label);
+    text-transform: uppercase;
+    font-weight: 500;
+    color: var(--c-ink-muted);
+    padding-block: var(--s-2);
+    transition: color var(--dur) var(--ease);
+  }
+
+  .nav-link:hover,
+  .nav-link:focus-visible { color: var(--c-ink); }
+  .nav-link.is-current { color: var(--c-ink); }
+
+  /* Toggle: two rules that cross into an X. 44px touch target. */
+  .nav-toggle {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    margin-right: -10px;
+    z-index: 120;
+  }
+
+  .nav-toggle__bars {
+    display: block;
+    position: relative;
+    width: 22px;
+    height: 10px;
+  }
+
+  .nav-toggle__bars i {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background: var(--c-ink);
+    transition: transform var(--dur) var(--ease), opacity var(--dur-fast) var(--ease);
+  }
+
+  .nav-toggle__bars i:first-child { top: 0; }
+  .nav-toggle__bars i:last-child { top: 9px; }
+
+  .nav-toggle[aria-expanded='true'] .nav-toggle__bars i:first-child {
+    transform: translateY(4.5px) rotate(45deg);
+  }
+  .nav-toggle[aria-expanded='true'] .nav-toggle__bars i:last-child {
+    transform: translateY(-4.5px) rotate(-45deg);
+  }
+
+  .mobile-nav {
+    position: fixed;
+    inset: 0;
+    z-index: 110;
+    background: var(--c-bg);
+    padding: calc(var(--header-h) + var(--s-7)) var(--gutter) var(--s-7);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    opacity: 0;
+    transition: opacity var(--dur) var(--ease);
+  }
+
+  .mobile-nav[hidden] { display: none; }
+  .mobile-nav.is-open { opacity: 1; }
+
+  .mobile-nav ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-2);
+  }
+
+  .mobile-nav__link {
+    display: block;
+    font-size: clamp(2rem, 1.2rem + 3.6vw, 2.75rem);
+    font-weight: 400;
+    letter-spacing: var(--tr-display);
+    line-height: 1.25;
+    padding-block: var(--s-2);
+    color: var(--c-ink);
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  .mobile-nav.is-open .mobile-nav__link {
+    animation: nav-in var(--dur) var(--ease) forwards;
+    animation-delay: calc(60ms + var(--i) * 45ms);
+  }
+
+  .mobile-nav__link.is-current { color: var(--c-ink-muted); }
+  .mobile-nav__foot { margin: 0; }
+
+  @keyframes nav-in {
+    to { opacity: 1; transform: none; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .mobile-nav__link { opacity: 1; transform: none; }
+    .mobile-nav.is-open .mobile-nav__link { animation: none; }
+  }
+
+  @media (min-width: 48rem) {
+    .nav-desktop { display: block; }
+    .nav-toggle { display: none; }
+  }
+</style>
+
+<script>
+  const header = document.querySelector<HTMLElement>('[data-site-header]');
+  const toggle = document.querySelector<HTMLButtonElement>('[data-nav-toggle]');
+  const label = document.querySelector<HTMLElement>('[data-nav-toggle-label]');
+  const panel = document.querySelector<HTMLElement>('[data-mobile-nav]');
+
+  /* --- hairline on scroll --- */
+  if (header) {
+    const sync = () => {
+      if (window.scrollY > 8) header.setAttribute('data-scrolled', '');
+      else header.removeAttribute('data-scrolled');
+    };
+    sync();
+    window.addEventListener('scroll', sync, { passive: true });
+  }
+
+  /* --- mobile navigation --- */
+  if (toggle && panel && label) {
+    let lastFocused: HTMLElement | null = null;
+
+    const open = () => {
+      lastFocused = document.activeElement as HTMLElement;
+      panel.hidden = false;
+      // Next frame, so the opacity transition has a starting value to animate from.
+      requestAnimationFrame(() => panel.classList.add('is-open'));
+      toggle.setAttribute('aria-expanded', 'true');
+      label.textContent = 'Zavřít menu';
+      document.body.style.overflow = 'hidden';
+      panel.querySelector<HTMLAnchorElement>('a')?.focus();
+    };
+
+    const close = (restoreFocus = true) => {
+      panel.classList.remove('is-open');
+      toggle.setAttribute('aria-expanded', 'false');
+      label.textContent = 'Otevřít menu';
+      document.body.style.overflow = '';
+      const finish = () => {
+        panel.hidden = true;
+        if (restoreFocus) (lastFocused ?? toggle).focus();
+      };
+      const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (reduced) finish();
+      else window.setTimeout(finish, 200);
+    };
+
+    toggle.addEventListener('click', () => {
+      if (toggle.getAttribute('aria-expanded') === 'true') close();
+      else open();
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && toggle.getAttribute('aria-expanded') === 'true') close();
+    });
+
+    // Following a link inside the sheet should not restore focus to the toggle.
+    panel.addEventListener('click', (e) => {
+      if ((e.target as HTMLElement).closest('a')) close(false);
+    });
+
+    // Leaving the mobile breakpoint with the sheet open would trap scrolling.
+    const mq = window.matchMedia('(min-width: 48rem)');
+    mq.addEventListener('change', (e) => {
+      if (e.matches && toggle.getAttribute('aria-expanded') === 'true') close(false);
+    });
+  }
+</script>

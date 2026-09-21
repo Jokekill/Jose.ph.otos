@@ -1,0 +1,109 @@
+---
+import PhotoFigure from './PhotoFigure.astro';
+import Lightbox from './Lightbox.astro';
+import type { ResolvedPhoto } from '../data/portfolio';
+
+interface Props {
+  photos: ResolvedPhoto[];
+  /** How many leading photos load eagerly (above the fold). */
+  eagerCount?: number;
+  /** Unique id — lets several galleries coexist on one page. */
+  id?: string;
+}
+
+const { photos, eagerCount = 2, id = 'gallery' } = Astro.props;
+
+/**
+ * Justified rows, CSS only.
+ *
+ * Each photo's flex-basis is proportional to its aspect ratio, so flexbox
+ * distributes a row's width in proportion to how wide each photo *wants* to be
+ * — every photo in a row ends up the same height with its native ratio intact.
+ * No cropping to a uniform grid, no JavaScript measuring pass.
+ *
+ * Every third landscape photo is promoted to a full-width anchor, which is what
+ * stops the page reading as a uniform contact sheet.
+ */
+const items = photos.map((photo, i) => {
+  const landscapeIndex = photos
+    .slice(0, i + 1)
+    .filter((p) => p.orientation === 'landscape').length;
+  const anchor = photo.orientation === 'landscape' && landscapeIndex % 3 === 0;
+  return { photo, i, anchor };
+});
+---
+
+<div class="gallery" data-gallery id={id}>
+  {
+    items.map(({ photo, i, anchor }) => (
+      <div
+        class:list={['gallery__item', { 'gallery__item--anchor': anchor }]}
+        style={`--ar:${photo.aspectRatio.toFixed(4)}`}
+      >
+        <div class="reveal" style={`--reveal-delay:${Math.min(i, 3) * 70}ms`}>
+          <PhotoFigure
+            photo={photo}
+            index={i}
+            interactive
+            priority={i < eagerCount}
+            sizes={
+              anchor
+                ? '(max-width: 48rem) 100vw, 90vw'
+                : '(max-width: 40rem) 100vw, (max-width: 64rem) 50vw, 40vw'
+            }
+          />
+        </div>
+      </div>
+    ))
+  }
+  <!-- Keeps a short last row from stretching to full width. -->
+  <div class="gallery__filler" aria-hidden="true"></div>
+</div>
+
+<Lightbox galleryId={id} />
+
+<style>
+  .gallery {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--gallery-gap);
+    --row-h: 60vh;
+  }
+
+  .gallery__item {
+    flex-grow: var(--ar);
+    flex-shrink: 1;
+    flex-basis: calc(var(--ar) * var(--row-h));
+    min-width: 0;
+  }
+
+  .gallery__item--anchor { flex-basis: 100%; }
+
+  .gallery__filler {
+    flex-grow: 999999;
+    flex-basis: 0;
+    min-width: 0;
+  }
+
+  /* --- Mobile: one photograph at a time, full bleed of the gutter. --------
+     A justified row of two portraits at 360px is unreadable; a single large
+     photo is the whole point of the site. */
+  @media (max-width: 47.999rem) {
+    .gallery { --row-h: 0; }
+    .gallery__item,
+    .gallery__item--anchor { flex-basis: 100%; }
+    .gallery__filler { display: none; }
+  }
+
+  @media (min-width: 48rem) {
+    .gallery { --row-h: 44vh; }
+  }
+
+  @media (min-width: 64rem) {
+    .gallery { --row-h: 52vh; }
+  }
+
+  @media (min-width: 90rem) {
+    .gallery { --row-h: 58vh; }
+  }
+</style>

@@ -1,0 +1,133 @@
+---
+import { site, nav, publicContacts } from '../data/site';
+import { activeCategories } from '../data/portfolio';
+import { path } from '../lib/paths';
+
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <div class="shell">
+    <hr class="rule" />
+
+    <div class="site-footer__grid">
+      <div class="site-footer__brand">
+        <p class="site-footer__name serif">{site.name}</p>
+        <p class="muted">{site.claim}</p>
+        <p class="muted">{site.location}</p>
+      </div>
+
+      <nav class="site-footer__col" aria-label="Portfolio">
+        <h2 class="label">Portfolio</h2>
+        <ul role="list">
+          {
+            activeCategories.map((c) => (
+              <li>
+                <a class="link link--quiet" href={path(`/portfolio/${c.slug}/`)}>
+                  {c.title}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+
+      <nav class="site-footer__col" aria-label="Stránky">
+        <h2 class="label">Web</h2>
+        <ul role="list">
+          {
+            nav.map((item) => (
+              <li>
+                <a class="link link--quiet" href={path(item.href)}>
+                  {item.label}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+
+      <div class="site-footer__col">
+        <h2 class="label">Kontakt</h2>
+        <ul role="list">
+          {
+            publicContacts.map((c) => (
+              <li>
+                <a
+                  class="link link--quiet"
+                  href={c.href}
+                  rel={c.external ? 'noopener noreferrer' : undefined}
+                  target={c.external ? '_blank' : undefined}
+                >
+                  {c.value}
+                  {c.external && <span class="visually-hidden"> (otevře se v novém okně)</span>}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </div>
+
+    <p class="site-footer__legal">
+      <span>© {year} {site.name}</span>
+      <span aria-hidden="true">·</span>
+      <span>{site.brand}</span>
+    </p>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    margin-top: var(--section-gap-lg);
+    padding-bottom: var(--s-6);
+    font-size: var(--t-small);
+  }
+
+  .site-footer__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--s-6) var(--s-5);
+    padding-block: var(--s-7) var(--s-6);
+  }
+
+  .site-footer__brand { display: grid; gap: var(--s-1); }
+
+  .site-footer__name {
+    font-size: var(--t-h3);
+    letter-spacing: -0.01em;
+  }
+
+  .site-footer__col ul {
+    margin: var(--s-3) 0 0;
+    padding: 0;
+    display: grid;
+    gap: var(--s-2);
+  }
+
+  .site-footer__col h2 { font-size: var(--t-meta); }
+
+  .site-footer__legal {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-2);
+    color: var(--c-ink-muted);
+    font-size: var(--t-meta);
+    padding-top: var(--s-5);
+  }
+
+  @media (min-width: 40rem) {
+    .site-footer__grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+    .site-footer__brand { grid-column: 1 / -1; margin-bottom: var(--s-4); }
+  }
+
+  @media (min-width: 64rem) {
+    .site-footer__grid {
+      grid-template-columns: 2fr repeat(3, minmax(0, 1fr));
+      gap: var(--s-6);
+    }
+    .site-footer__brand { grid-column: auto; margin-bottom: 0; }
+  }
+</style>

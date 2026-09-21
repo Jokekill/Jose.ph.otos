@@ -1,0 +1,412 @@
+/* =========================================================================
+   jose.ph.otos — design system
+   White background, near-black type, generous whitespace.
+   Colour comes from the photographs, never from the UI.
+   ========================================================================= */
+
+/* ---------- Fonts (self-hosted, latin + latin-ext for Czech diacritics) --- */
+
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('/fonts/inter-latin-wght-normal.woff2') format('woff2-variations');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+    U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193,
+    U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('/fonts/inter-latin-ext-wght-normal.woff2') format('woff2-variations');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF,
+    U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020,
+    U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+@font-face {
+  font-family: 'Instrument Serif';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/instrument-serif-latin-400-normal.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+    U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193,
+    U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Instrument Serif';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/instrument-serif-latin-ext-400-normal.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF,
+    U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020,
+    U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+/* ---------- Tokens ------------------------------------------------------- */
+
+:root {
+  /* Colour — UI only. Photographs are never tinted or desaturated by CSS. */
+  --c-bg: #ffffff;
+  --c-bg-sunken: #fafafa;
+  --c-ink: #101010;
+  --c-ink-soft: #3d3d3d;
+  --c-ink-muted: #767676;   /* 4.6:1 on white — passes AA for body text */
+  --c-ink-faint: #a0a0a0;   /* decorative / large text only */
+  --c-line: #e7e7e7;
+  --c-line-strong: #101010;
+  --c-focus: #101010;
+  --c-lightbox-bg: #0b0b0b;
+  --c-lightbox-ink: #f2f2f2;
+
+  /* Typefaces */
+  --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI',
+    Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-serif: 'Instrument Serif', ui-serif, Georgia, 'Times New Roman', serif;
+
+  /* Fluid type scale — 360px .. 1440px viewport */
+  --t-micro: 0.6875rem;                                  /* 11px  labels      */
+  --t-meta: 0.75rem;                                     /* 12px  meta/nav    */
+  --t-small: 0.8125rem;                                  /* 13px              */
+  --t-body: clamp(0.9375rem, 0.9rem + 0.16vw, 1.0625rem);
+  --t-lead: clamp(1.0625rem, 0.98rem + 0.38vw, 1.3125rem);
+  --t-h3: clamp(1.125rem, 1.03rem + 0.42vw, 1.375rem);
+  --t-h2: clamp(1.5rem, 1.25rem + 1.1vw, 2.25rem);
+  --t-h1: clamp(2rem, 1.4rem + 2.7vw, 3.75rem);
+  --t-display: clamp(2.5rem, 1.4rem + 4.9vw, 6rem);
+
+  /* Line heights */
+  --lh-tight: 1.04;
+  --lh-snug: 1.2;
+  --lh-normal: 1.5;
+  --lh-relaxed: 1.7;
+
+  /* Tracking */
+  --tr-display: -0.03em;
+  --tr-heading: -0.02em;
+  --tr-body: 0;
+  --tr-label: 0.09em;
+
+  /* Spacing scale (8px base, exponential-ish) */
+  --s-1: 0.25rem;
+  --s-2: 0.5rem;
+  --s-3: 0.75rem;
+  --s-4: 1rem;
+  --s-5: 1.5rem;
+  --s-6: 2rem;
+  --s-7: 3rem;
+  --s-8: 4rem;
+  --s-9: 6rem;
+  --s-10: 8rem;
+
+  /* Fluid vertical rhythm between major page sections */
+  --section-gap: clamp(3.5rem, 2rem + 6vw, 8rem);
+  --section-gap-lg: clamp(5rem, 2.5rem + 9vw, 11rem);
+
+  /* Layout */
+  --gutter: clamp(1.25rem, 0.6rem + 2.6vw, 3.5rem);
+  --w-site: 1680px;      /* outer shell, wide for photography           */
+  --w-wide: 1440px;      /* galleries                                   */
+  --w-content: 1080px;   /* mixed text + image content                  */
+  --w-prose: 62ch;       /* running text — never wider                  */
+  --gallery-gap: clamp(0.75rem, 0.35rem + 1.7vw, 2rem);
+
+  /* Motion */
+  --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --dur-fast: 160ms;
+  --dur: 320ms;
+  --dur-slow: 640ms;
+
+  --header-h: 4rem;
+}
+
+@media (min-width: 48rem) {
+  :root { --header-h: 5.5rem; }
+}
+
+/* ---------- Reset -------------------------------------------------------- */
+
+*,
+*::before,
+*::after { box-sizing: border-box; }
+
+* { margin: 0; }
+
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+  /* Anchors clear the sticky header */
+  scroll-padding-top: calc(var(--header-h) + var(--s-4));
+}
+
+body {
+  background: var(--c-bg);
+  color: var(--c-ink);
+  font-family: var(--font-sans);
+  font-size: var(--t-body);
+  line-height: var(--lh-normal);
+  letter-spacing: var(--tr-body);
+  font-synthesis-weight: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+}
+
+img,
+picture,
+video,
+canvas,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+input,
+button,
+textarea,
+select {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+p,
+h1,
+h2,
+h3,
+h4,
+li { overflow-wrap: break-word; }
+
+ul[role='list'],
+ol[role='list'] {
+  list-style: none;
+  padding: 0;
+}
+
+:target { scroll-margin-top: calc(var(--header-h) + var(--s-5)); }
+
+/* ---------- Typography --------------------------------------------------- */
+
+h1, h2, h3, h4 {
+  font-weight: 500;
+  line-height: var(--lh-snug);
+  letter-spacing: var(--tr-heading);
+  text-wrap: balance;
+}
+
+h1 { font-size: var(--t-h1); line-height: var(--lh-tight); letter-spacing: var(--tr-display); }
+h2 { font-size: var(--t-h2); }
+h3 { font-size: var(--t-h3); }
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* ---------- Utility classes --------------------------------------------- */
+
+.shell {
+  width: 100%;
+  max-width: var(--w-site);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+.shell--wide { max-width: var(--w-wide); }
+.shell--content { max-width: var(--w-content); }
+.shell--flush { padding-inline: 0; }
+
+.prose {
+  max-width: var(--w-prose);
+  font-size: var(--t-body);
+  line-height: var(--lh-relaxed);
+  color: var(--c-ink-soft);
+}
+
+.prose > * + * { margin-top: 1.1em; }
+.prose strong { color: var(--c-ink); font-weight: 500; }
+
+.lead {
+  font-size: var(--t-lead);
+  line-height: 1.45;
+  letter-spacing: -0.015em;
+  color: var(--c-ink);
+  max-width: 34ch;
+  text-wrap: pretty;
+}
+
+.serif {
+  font-family: var(--font-serif);
+  font-weight: 400;
+  letter-spacing: -0.005em;
+}
+
+/* Small uppercase label — the only "UI decoration" the design allows. */
+.label {
+  font-size: var(--t-meta);
+  letter-spacing: var(--tr-label);
+  text-transform: uppercase;
+  color: var(--c-ink-muted);
+  font-weight: 500;
+}
+
+.muted { color: var(--c-ink-muted); }
+
+/* Section header: label + title, used across every page for consistency. */
+.section-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--s-3) var(--s-5);
+  margin-bottom: clamp(1.5rem, 0.8rem + 2.4vw, 3rem);
+}
+
+/* Underline-on-hover link, the site's standard interactive text treatment. */
+.link {
+  position: relative;
+  display: inline-block;
+  padding-bottom: 2px;
+  background-image: linear-gradient(currentColor, currentColor);
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  background-size: 100% 1px;
+  transition: background-size var(--dur) var(--ease);
+}
+
+.link:hover,
+.link:focus-visible { background-size: 0 1px; background-position: 100% 100%; }
+
+.link--quiet {
+  background-size: 0 1px;
+  background-position: 100% 100%;
+}
+
+.link--quiet:hover,
+.link--quiet:focus-visible { background-size: 100% 1px; background-position: 0 100%; }
+
+/* Text button / CTA — a rule, never a filled pill. */
+.cta {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-3);
+  font-size: var(--t-small);
+  letter-spacing: var(--tr-label);
+  text-transform: uppercase;
+  font-weight: 500;
+  color: var(--c-ink);
+  padding-block: var(--s-3);
+  border-bottom: 1px solid var(--c-line-strong);
+  transition: gap var(--dur) var(--ease), opacity var(--dur) var(--ease);
+  min-height: 44px;
+}
+
+.cta:hover,
+.cta:focus-visible { gap: var(--s-4); }
+.cta__arrow { transition: transform var(--dur) var(--ease); }
+.cta:hover .cta__arrow { transform: translateX(2px); }
+
+.rule {
+  border: 0;
+  border-top: 1px solid var(--c-line);
+  margin: 0;
+}
+
+/* ---------- Accessibility ------------------------------------------------ */
+
+:focus-visible {
+  outline: 2px solid var(--c-focus);
+  outline-offset: 3px;
+  border-radius: 1px;
+}
+
+.visually-hidden {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+.skip-link {
+  position: absolute;
+  top: var(--s-2);
+  left: var(--s-2);
+  z-index: 200;
+  transform: translateY(-200%);
+  background: var(--c-ink);
+  color: var(--c-bg);
+  padding: var(--s-3) var(--s-4);
+  font-size: var(--t-small);
+  transition: transform var(--dur-fast) var(--ease);
+}
+
+.skip-link:focus-visible { transform: translateY(0); }
+
+/* ---------- Motion ------------------------------------------------------- */
+
+/* Progressive reveal; JS adds .is-visible. Without JS everything stays shown. */
+.reveal {
+  opacity: 1;
+}
+
+html.js .reveal {
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity var(--dur-slow) var(--ease), transform var(--dur-slow) var(--ease);
+  transition-delay: var(--reveal-delay, 0ms);
+  will-change: opacity, transform;
+}
+
+html.js .reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  html.js .reveal {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
+/* ---------- Print -------------------------------------------------------- */
+
+@media print {
+  .site-header,
+  .site-footer,
+  .lightbox { display: none !important; }
+}

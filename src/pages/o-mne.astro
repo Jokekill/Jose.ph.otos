@@ -1,0 +1,129 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PhotoFigure from '../components/PhotoFigure.astro';
+import { about } from '../data/about';
+import { photos } from '../data/portfolio';
+import { path } from '../lib/paths';
+
+// TODO(content): replace with a real portrait of Pepa once one is supplied.
+const portrait = photos.find((p) => p.category === 'portrety' && p.orientation === 'portrait');
+---
+
+<BaseLayout
+  title="O mně"
+  description="Pepa Dočkal, fotograf z Prahy a Brna. Fotí lidi, co se neradi fotí — portréty, svatby, koncerty a eventy."
+>
+  <div class="about shell shell--wide">
+    <div class="about__text">
+      <h1 class="about__lead serif">{about.lead}</h1>
+
+      {
+        !about.textConfirmed && (
+          <p class="draft-note">
+            <strong>Pracovní verze textu.</strong> Finální znění zatím nebylo dodáno —
+            níže je jen to, co vyplývá ze zadání.
+          </p>
+        )
+      }
+
+      <div class="prose">
+        {about.paragraphs.map((p) => <p>{p}</p>)}
+      </div>
+
+      <dl class="facts">
+        {
+          about.facts.map((fact) => (
+            <div class="facts__row">
+              <dt class="label">{fact.label}</dt>
+              <dd>{fact.value}</dd>
+            </div>
+          ))
+        }
+      </dl>
+
+      <a class="cta" href={path('/kontakt/')}>
+        Ozvat se
+        <span class="cta__arrow" aria-hidden="true">→</span>
+      </a>
+    </div>
+
+    <div class="about__media">
+      {
+        portrait && (
+          <PhotoFigure
+            photo={portrait}
+            priority
+            sizes="(max-width: 48rem) 100vw, 40vw"
+            widths={[480, 720, 1000, 1400]}
+          />
+        )
+      }
+      <p class="about__caption muted">
+        Dočasná ukázková fotografie — portrét fotografa zatím není k dispozici.
+      </p>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .about {
+    display: grid;
+    gap: var(--section-gap);
+  }
+
+  .about__lead {
+    font-size: var(--t-h1);
+    line-height: 1.08;
+    max-width: 18ch;
+    font-weight: 400;
+    margin-bottom: var(--s-6);
+  }
+
+  .draft-note {
+    border-left: 2px solid var(--c-line-strong);
+    padding: var(--s-1) 0 var(--s-1) var(--s-4);
+    margin-bottom: var(--s-6);
+    font-size: var(--t-small);
+    color: var(--c-ink-soft);
+    max-width: var(--w-prose);
+  }
+
+  .draft-note strong { font-weight: 500; color: var(--c-ink); }
+
+  .facts {
+    margin: var(--s-7) 0 var(--s-6);
+    display: grid;
+    gap: 0;
+    max-width: var(--w-prose);
+  }
+
+  .facts__row {
+    display: grid;
+    gap: var(--s-1);
+    padding-block: var(--s-3);
+    border-top: 1px solid var(--c-line);
+  }
+
+  .facts__row dd { margin: 0; font-size: var(--t-small); }
+
+  .about__caption {
+    font-size: var(--t-meta);
+    padding-top: var(--s-3);
+  }
+
+  @media (min-width: 48rem) {
+    .about {
+      grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+      gap: clamp(2rem, 0.5rem + 5vw, 5rem);
+      align-items: start;
+    }
+
+    .about__media { position: sticky; top: calc(var(--header-h) + var(--s-5)); }
+
+    .facts__row {
+      grid-template-columns: 12rem 1fr;
+      gap: var(--s-4);
+      align-items: baseline;
+    }
+  }
+</style>

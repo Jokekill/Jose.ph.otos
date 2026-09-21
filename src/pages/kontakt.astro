@@ -1,0 +1,110 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { contacts, site } from '../data/site';
+import { path } from '../lib/paths';
+
+/**
+ * No contact form on purpose.
+ *
+ * This is a static site, so a form would mean a third-party form provider and
+ * therefore a decision about where visitors' messages end up — that is the
+ * client's call, not ours. Until they make it, the shortest honest path from
+ * "I like these photos" to "I am writing to Pepa" is a big mailto link.
+ * See AGENT_PROGRESS.md → Open questions.
+ */
+---
+
+<BaseLayout
+  title="Kontakt"
+  description="Napište Pepovi Dočkalovi. Focení v Praze, Brně a kdekoliv jinde."
+>
+  <section class="shell shell--content kontakt">
+    <h1 class="kontakt__title">Napište mi</h1>
+
+    <p class="lead">
+      Stačí pár vět — co, kdy a zhruba kde. Ozvu se obvykle do dvou dnů
+      a doladíme zbytek.
+    </p>
+
+    <ul class="channels" role="list">
+      {
+        contacts.map((c) => (
+          <li class="channel">
+            <span class="label">{c.label}</span>
+            {c.placeholder ? (
+              <span class="channel__value channel__value--todo muted">
+                Zatím nedoplněno
+              </span>
+            ) : (
+              <a
+                class="channel__value link"
+                href={c.href}
+                rel={c.external ? 'noopener noreferrer' : undefined}
+                target={c.external ? '_blank' : undefined}
+              >
+                {c.value}
+                {c.external && (
+                  <span class="visually-hidden"> (otevře se v novém okně)</span>
+                )}
+              </a>
+            )}
+          </li>
+        ))
+      }
+      <li class="channel">
+        <span class="label">Kde</span>
+        <span class="channel__value">{site.location}</span>
+      </li>
+    </ul>
+
+    <p class="kontakt__note muted">
+      Fotím i mimo Prahu a Brno — cestovné se řeší individuálně podle vzdálenosti.
+      Ceny najdete v <a class="link" href={path('/cenik/')}>ceníku</a>.
+    </p>
+  </section>
+</BaseLayout>
+
+<style>
+  .kontakt { display: grid; gap: var(--s-6); }
+
+  .kontakt__title {
+    font-size: var(--t-display);
+    line-height: 1;
+    letter-spacing: -0.03em;
+    font-weight: 400;
+  }
+
+  .channels {
+    margin: var(--s-5) 0 0;
+    padding: 0;
+    display: grid;
+  }
+
+  .channel {
+    display: grid;
+    gap: var(--s-1);
+    padding-block: var(--s-5);
+    border-top: 1px solid var(--c-line);
+  }
+
+  .channels > .channel:last-child { border-bottom: 1px solid var(--c-line); }
+
+  /* Contact details are the point of this page, so they are set large. */
+  .channel__value {
+    font-size: clamp(1.25rem, 0.95rem + 1.3vw, 1.875rem);
+    letter-spacing: -0.015em;
+    word-break: break-word;
+  }
+
+  .channel__value--todo { font-size: var(--t-body); }
+
+  .kontakt__note { font-size: var(--t-small); max-width: var(--w-prose); }
+
+  @media (min-width: 48rem) {
+    .channel {
+      grid-template-columns: 10rem 1fr;
+      gap: var(--s-5);
+      align-items: baseline;
+    }
+  }
+</style>

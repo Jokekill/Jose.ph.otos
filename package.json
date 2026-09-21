@@ -1,0 +1,23 @@
+{
+  "name": "joseph-otos",
+  "type": "module",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Photography portfolio for Pepa Dockal / jose.ph.otos",
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro check && astro build",
+    "build:fast": "astro build",
+    "preview": "astro preview",
+    "check": "astro check",
+    "demo:generate": "node scripts/generate-demo-images.mjs"
+  },
+  "dependencies": {
+    "@astrojs/check": "^0.9.10",
+    "@astrojs/sitemap": "^3.7.4",
+    "astro": "^7.3.3",
+    "sharp": "^0.35.4",
+    "typescript": "^6.0.3"
+  }
+}

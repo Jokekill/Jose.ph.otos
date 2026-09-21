@@ -1,0 +1,182 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PhotoFigure from '../components/PhotoFigure.astro';
+import Gallery from '../components/Gallery.astro';
+import { site, primaryContact } from '../data/site';
+import { heroPhoto, featuredPhotos, activeCategories, categoryCover } from '../data/portfolio';
+import { path } from '../lib/paths';
+
+const hero = heroPhoto();
+const featured = featuredPhotos(7);
+---
+
+<BaseLayout flush>
+  <!-- Masthead: name, craft, claim, place. Four lines, then photography. -->
+  <section class="masthead shell">
+    <p class="label masthead__eyebrow">{site.name} — {site.role}</p>
+    <h1 class="masthead__claim serif">{site.claim}</h1>
+    <p class="masthead__place">{site.location}</p>
+  </section>
+
+  {
+    hero && (
+      <section class="hero shell shell--wide" aria-label="Úvodní fotografie">
+        <PhotoFigure
+          photo={hero}
+          priority
+          sizes="(max-width: 90rem) 100vw, 1440px"
+          widths={[640, 960, 1280, 1600, 2000]}
+          class="hero__photo"
+        />
+      </section>
+    )
+  }
+
+  <section class="section shell shell--wide" aria-labelledby="vybrane">
+    <div class="section-head">
+      <h2 id="vybrane">Vybrané práce</h2>
+      <a class="link link--quiet label" href={path('/portfolio/')}>Celé portfolio</a>
+    </div>
+    <Gallery photos={featured} id="gallery-home" eagerCount={0} />
+  </section>
+
+  <section class="section shell shell--wide" aria-labelledby="oblasti">
+    <div class="section-head">
+      <h2 id="oblasti">Co fotím</h2>
+    </div>
+
+    <ul class="cats" role="list">
+      {
+        activeCategories.map((category, i) => {
+          const cover = categoryCover(category.slug);
+          return (
+            <li class="cats__item reveal" style={`--reveal-delay:${Math.min(i, 3) * 70}ms`}>
+              <a class="cats__link" href={path(`/portfolio/${category.slug}/`)}>
+                {cover && (
+                  <PhotoFigure
+                    photo={cover}
+                    sizes="(max-width: 40rem) 100vw, (max-width: 64rem) 50vw, 33vw"
+                    widths={[400, 600, 900, 1200]}
+                  />
+                )}
+                <span class="cats__meta">
+                  <span class="cats__title">{category.title}</span>
+                  <span class="cats__intro muted">{category.intro}</span>
+                </span>
+              </a>
+            </li>
+          );
+        })
+      }
+    </ul>
+  </section>
+
+  <section class="section shell shell--content closing">
+    <p class="lead">
+      Máte v hlavě focení, o kterém zatím nevíte, jak přesně má vypadat? To je úplně
+      v pořádku — většinou se to vyjasní během pár zpráv.
+    </p>
+    <a class="cta" href={path('/kontakt/')}>
+      Napsat Pepovi
+      <span class="cta__arrow" aria-hidden="true">→</span>
+    </a>
+    <p class="closing__alt muted">
+      Nebo rovnou na <a class="link" href={primaryContact.href}>{primaryContact.value}</a>
+    </p>
+  </section>
+</BaseLayout>
+
+<style>
+  .masthead {
+    padding-top: clamp(2.5rem, 1.4rem + 4.4vw, 5.5rem);
+    padding-bottom: clamp(1.75rem, 1rem + 3vw, 3.5rem);
+    display: grid;
+    gap: var(--s-4);
+    max-width: var(--w-wide);
+  }
+
+  .masthead__eyebrow { margin: 0; }
+
+  .masthead__claim {
+    font-size: var(--t-display);
+    line-height: 0.98;
+    letter-spacing: -0.025em;
+    max-width: 16ch;
+    margin: 0;
+    font-weight: 400;
+  }
+
+  .masthead__place {
+    margin: 0;
+    color: var(--c-ink-muted);
+    font-size: var(--t-body);
+  }
+
+  .hero :global(.hero__photo) {
+    /* The hero keeps its own ratio on desktop but never gets so tall on a phone
+       that the first screen shows nothing but sky. */
+    max-height: 78svh;
+  }
+
+  .section { padding-top: var(--section-gap); }
+
+  /* --- Category entries: photograph, name, one line. No cards. ----------- */
+  .cats {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--section-gap) var(--gallery-gap);
+    margin: 0;
+    padding: 0;
+  }
+
+  .cats__link { display: block; }
+
+  .cats__meta {
+    display: grid;
+    gap: 0.15rem;
+    padding-top: var(--s-4);
+  }
+
+  .cats__title {
+    font-size: var(--t-h3);
+    letter-spacing: var(--tr-heading);
+  }
+
+  .cats__intro { font-size: var(--t-small); }
+
+  .cats__link :global(.photo) { aspect-ratio: 4 / 5; }
+
+  @media (hover: hover) {
+    .cats__link :global(.photo__img) {
+      transition: transform var(--dur-slow) var(--ease);
+    }
+    .cats__link:hover :global(.photo__img) { transform: scale(1.02); }
+  }
+
+  .cats__link:focus-visible {
+    outline: 2px solid var(--c-focus);
+    outline-offset: 6px;
+  }
+
+  .closing { display: grid; justify-items: start; gap: var(--s-5); }
+  .closing__alt { margin: 0; font-size: var(--t-small); }
+
+  @media (min-width: 40rem) {
+    .cats {
+      grid-template-columns: repeat(2, 1fr);
+      gap: clamp(2rem, 1rem + 4vw, 4rem) var(--gallery-gap);
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .cats { grid-template-columns: repeat(3, 1fr); }
+    /* The first entry spans two columns so the row reads editorially rather
+       than as three identical tiles. */
+    .cats__item:first-child { grid-column: span 2; }
+    .cats__item:first-child :global(.photo) { aspect-ratio: 16 / 10; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .cats__link:hover :global(.photo__img) { transform: none; }
+  }
+</style>

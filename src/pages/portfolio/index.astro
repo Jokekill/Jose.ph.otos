@@ -1,0 +1,112 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PhotoFigure from '../../components/PhotoFigure.astro';
+import { activeCategories, categoryCover, photosByCategory } from '../../data/portfolio';
+import { path } from '../../lib/paths';
+---
+
+<BaseLayout
+  title="Portfolio"
+  description="Portréty, svatby, koncerty, eventy a produktové focení. Výběr z práce fotografa Pepy Dočkala."
+>
+  <section class="shell shell--wide page-head">
+    <h1>Portfolio</h1>
+    <p class="lead">
+      Pět oblastí, ve kterých se pohybuji nejčastěji. Pokud to, co potřebujete,
+      mezi nimi nenajdete, napište — spousta focení se stejně nevejde do škatulky.
+    </p>
+  </section>
+
+  <div class="shell shell--wide">
+    <ul class="areas" role="list">
+      {
+        activeCategories.map((category, i) => {
+          const cover = categoryCover(category.slug);
+          const count = photosByCategory(category.slug).length;
+          return (
+            <li class="areas__item reveal">
+              <a class="areas__link" href={path(`/portfolio/${category.slug}/`)}>
+                <div class="areas__media">
+                  {cover && (
+                    <PhotoFigure
+                      photo={cover}
+                      priority={i === 0}
+                      sizes="(max-width: 48rem) 100vw, 58vw"
+                      widths={[600, 900, 1200, 1600]}
+                    />
+                  )}
+                </div>
+                <div class="areas__text">
+                  <h2 class="areas__title">{category.title}</h2>
+                  <p class="areas__intro muted">{category.intro}</p>
+                  <p class="areas__count label">
+                    {count}
+                    {count < 5 ? ' fotografie' : ' fotografií'}
+                  </p>
+                </div>
+              </a>
+            </li>
+          );
+        })
+      }
+    </ul>
+  </div>
+</BaseLayout>
+
+<style>
+  .page-head {
+    display: grid;
+    gap: var(--s-5);
+    padding-bottom: var(--section-gap);
+  }
+
+  .areas {
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--section-gap);
+  }
+
+  .areas__link {
+    display: grid;
+    gap: var(--s-4);
+  }
+
+  .areas__link:focus-visible { outline: 2px solid var(--c-focus); outline-offset: 8px; }
+
+  .areas__media :global(.photo) { aspect-ratio: 3 / 2; }
+
+  @media (hover: hover) {
+    .areas__link :global(.photo__img) { transition: transform var(--dur-slow) var(--ease); }
+    .areas__link:hover :global(.photo__img) { transform: scale(1.02); }
+  }
+
+  .areas__title {
+    font-size: var(--t-h2);
+    font-weight: 400;
+  }
+
+  .areas__intro { margin-top: var(--s-1); }
+  .areas__count { margin-top: var(--s-3); color: var(--c-ink-faint); }
+
+  /* Alternating asymmetry: wide photo on one side, text on the other, sides
+     swapping down the page. Keeps the list from reading as a card grid. */
+  @media (min-width: 48rem) {
+    .areas__link {
+      grid-template-columns: minmax(0, 1.9fr) minmax(0, 1fr);
+      align-items: center;
+      gap: clamp(1.5rem, 0.5rem + 3.5vw, 4rem);
+    }
+
+    .areas__item:nth-child(even) .areas__media { order: 2; }
+
+    .areas__item:nth-child(3n) .areas__media :global(.photo) { aspect-ratio: 4 / 5; }
+    .areas__item:nth-child(3n) .areas__link {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .areas__link:hover :global(.photo__img) { transform: none; }
+  }
+</style>

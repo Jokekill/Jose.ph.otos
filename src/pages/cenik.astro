@@ -1,0 +1,135 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { pricing, pricingIsPlaceholder } from '../data/pricing';
+import { primaryContact } from '../data/site';
+import { path } from '../lib/paths';
+---
+
+<BaseLayout
+  title="Ceník"
+  description="Ceník focení — portréty, svatby, eventy, koncerty a produktové fotografie."
+>
+  <section class="shell shell--content page-head">
+    <h1>Ceník</h1>
+    <p class="lead">
+      Každé focení je trochu jiné, takže ceny berte jako výchozí bod. Přesnou
+      nabídku vám rád pošlu, jakmile budu vědět, o co jde.
+    </p>
+
+    {
+      pricingIsPlaceholder && (
+        <p class="draft-note">
+          <strong>Ceny se připravují.</strong> Konkrétní částky zatím nejsou
+          zveřejněné — napište mi a pošlu vám nabídku na míru.
+        </p>
+      )
+    }
+  </section>
+
+  <div class="shell shell--content">
+    <ul class="packages" role="list">
+      {
+        pricing.map((item) => (
+          <li class="package reveal">
+            <div class="package__head">
+              <h2 class="package__title">{item.title}</h2>
+              <p class="package__price">
+                {item.priceConfirmed && item.price ? (
+                  item.price
+                ) : (
+                  <span class="muted">Cena na vyžádání</span>
+                )}
+              </p>
+            </div>
+            <p class="package__desc">{item.description}</p>
+            {item.priceConfirmed && (
+              <ul class="package__details" role="list">
+                {item.details.map((d) => (
+                  <li>{d}</li>
+                ))}
+              </ul>
+            )}
+          </li>
+        ))
+      }
+    </ul>
+
+    <div class="cenik-cta">
+      <hr class="rule" />
+      <p class="lead">Nenašli jste to, co hledáte?</p>
+      <a class="cta" href={path('/kontakt/')}>
+        Napsat o nabídku
+        <span class="cta__arrow" aria-hidden="true">→</span>
+      </a>
+      <p class="muted cenik-cta__alt">
+        <a class="link" href={primaryContact.href}>{primaryContact.value}</a>
+      </p>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .page-head { display: grid; gap: var(--s-5); padding-bottom: var(--section-gap); }
+
+  .draft-note {
+    border-left: 2px solid var(--c-line-strong);
+    padding: var(--s-1) 0 var(--s-1) var(--s-4);
+    font-size: var(--t-small);
+    color: var(--c-ink-soft);
+    max-width: var(--w-prose);
+  }
+
+  .draft-note strong { font-weight: 500; color: var(--c-ink); }
+
+  .packages { margin: 0; padding: 0; display: grid; }
+
+  .package {
+    border-top: 1px solid var(--c-line);
+    padding-block: clamp(1.5rem, 1rem + 2vw, 2.5rem);
+  }
+
+  .packages > .package:last-child { border-bottom: 1px solid var(--c-line); }
+
+  .package__head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--s-2) var(--s-5);
+  }
+
+  .package__title { font-size: var(--t-h3); font-weight: 400; }
+
+  .package__price {
+    font-size: var(--t-small);
+    letter-spacing: var(--tr-label);
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .package__desc {
+    margin-top: var(--s-3);
+    max-width: var(--w-prose);
+    color: var(--c-ink-soft);
+    line-height: var(--lh-relaxed);
+  }
+
+  .package__details {
+    margin: var(--s-4) 0 0;
+    padding: 0;
+    display: grid;
+    gap: var(--s-2);
+    font-size: var(--t-small);
+    color: var(--c-ink-muted);
+  }
+
+  .cenik-cta {
+    margin-top: var(--section-gap);
+    display: grid;
+    justify-items: start;
+    gap: var(--s-5);
+  }
+
+  .cenik-cta .rule { justify-self: stretch; }
+  .cenik-cta__alt { margin: 0; font-size: var(--t-small); }
+</style>

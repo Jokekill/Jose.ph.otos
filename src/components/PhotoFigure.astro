@@ -1,0 +1,123 @@
+---
+import { Picture, getImage } from 'astro:assets';
+import type { ResolvedPhoto } from '../data/portfolio';
+
+interface Props {
+  photo: ResolvedPhoto;
+  /** `sizes` attribute — how wide this photo renders at each breakpoint. */
+  sizes: string;
+  /** Candidate widths for srcset. Capped at the source width by Astro. */
+  widths?: number[];
+  /** The hero and the first gallery row must not be lazy — they are the LCP. */
+  priority?: boolean;
+  /** Index within its gallery, used by the lightbox for prev/next. */
+  index?: number;
+  /** Renders the photo as a lightbox trigger rather than a plain figure. */
+  interactive?: boolean;
+  class?: string;
+}
+
+const {
+  photo,
+  sizes,
+  widths = [480, 768, 1024, 1440, 2000],
+  priority = false,
+  index,
+  interactive = false,
+  class: className,
+} = Astro.props;
+
+// The lightbox needs one large derivative; 2000px covers a retina full-screen
+// view without shipping the original.
+const full = await getImage({
+  src: photo.image,
+  width: Math.min(2000, photo.image.width),
+  format: 'webp',
+  quality: 82,
+});
+
+const dataAttrs = interactive
+  ? {
+      'data-lightbox-item': '',
+      'data-index': String(index ?? 0),
+      'data-full': full.src,
+      'data-full-w': String(full.attributes.width ?? photo.image.width),
+      'data-full-h': String(full.attributes.height ?? photo.image.height),
+      'data-alt': photo.alt,
+      'data-caption': photo.title ?? '',
+    }
+  : {};
+
+const Tag = interactive ? 'button' : 'figure';
+---
+
+<Tag
+  class:list={['photo', className, { 'photo--interactive': interactive }]}
+  style={`--ar:${photo.aspectRatio.toFixed(4)}`}
+  type={interactive ? 'button' : undefined}
+  aria-label={interactive ? `Zvětšit fotografii: ${photo.alt}` : undefined}
+  {...dataAttrs}
+>
+  <Picture
+    src={photo.image}
+    alt={interactive ? '' : photo.alt}
+    widths={widths}
+    sizes={sizes}
+    formats={['avif', 'webp']}
+    fallbackFormat="jpeg"
+    quality={80}
+    loading={priority ? 'eager' : 'lazy'}
+    fetchpriority={priority ? 'high' : 'auto'}
+    decoding={priority ? 'sync' : 'async'}
+    class="photo__img"
+    pictureAttributes={{ class: 'photo__picture' }}
+  />
+</Tag>
+
+<style>
+  .photo {
+    display: block;
+    position: relative;
+    margin: 0;
+    padding: 0;
+    background: var(--c-bg-sunken);
+    /* Reserving the box from the known ratio is what keeps CLS at zero. */
+    aspect-ratio: var(--ar);
+    overflow: hidden;
+  }
+
+  .photo__picture {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  .photo__img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    /* A hair of scale on hover — the only effect applied to a photograph. */
+    transition: transform var(--dur-slow) var(--ease), opacity var(--dur) var(--ease);
+  }
+
+  .photo--interactive {
+    width: 100%;
+    cursor: zoom-in;
+    border: 0;
+    text-align: inherit;
+  }
+
+  @media (hover: hover) {
+    .photo--interactive:hover .photo__img { transform: scale(1.018); }
+  }
+
+  .photo--interactive:focus-visible {
+    outline: 2px solid var(--c-focus);
+    outline-offset: 3px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .photo__img { transition: none; }
+    .photo--interactive:hover .photo__img { transform: none; }
+  }
+</style>

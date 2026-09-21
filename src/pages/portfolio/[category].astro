@@ -1,0 +1,79 @@
+---
+import type { GetStaticPaths } from 'astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Gallery from '../../components/Gallery.astro';
+import { activeCategories, photosByCategory } from '../../data/portfolio';
+import { path } from '../../lib/paths';
+
+export const getStaticPaths = (() =>
+  activeCategories.map((category) => ({
+    params: { category: category.slug },
+    props: { category },
+  }))) satisfies GetStaticPaths;
+
+const { category } = Astro.props;
+const photos = photosByCategory(category.slug);
+
+const index = activeCategories.findIndex((c) => c.slug === category.slug);
+const next = activeCategories[(index + 1) % activeCategories.length];
+---
+
+<BaseLayout title={category.title} description={category.description}>
+  <section class="shell shell--wide page-head">
+    <nav class="crumb" aria-label="Drobečková navigace">
+      <a class="link link--quiet label" href={path('/portfolio/')}>Portfolio</a>
+    </nav>
+    <h1>{category.title}</h1>
+    <p class="prose">{category.description}</p>
+  </section>
+
+  <div class="shell shell--wide">
+    <Gallery photos={photos} id={`gallery-${category.slug}`} eagerCount={2} />
+  </div>
+
+  {
+    next && next.slug !== category.slug && (
+      <nav class="shell shell--wide next-area" aria-label="Další kategorie">
+        <hr class="rule" />
+        <a class="next-area__link" href={path(`/portfolio/${next.slug}/`)}>
+          <span class="label">Další</span>
+          <span class="next-area__title">
+            {next.title}
+            <span class="next-area__arrow" aria-hidden="true"> →</span>
+          </span>
+        </a>
+      </nav>
+    )
+  }
+</BaseLayout>
+
+<style>
+  .page-head {
+    display: grid;
+    gap: var(--s-4);
+    padding-bottom: clamp(1.75rem, 1rem + 3vw, 3.25rem);
+  }
+
+  .crumb { margin-bottom: var(--s-1); }
+
+  .next-area { margin-top: var(--section-gap); }
+
+  .next-area__link {
+    display: grid;
+    gap: var(--s-2);
+    padding-top: var(--s-6);
+  }
+
+  .next-area__title {
+    font-size: var(--t-h2);
+    font-weight: 400;
+    letter-spacing: var(--tr-heading);
+  }
+
+  .next-area__arrow {
+    display: inline-block;
+    transition: transform var(--dur) var(--ease);
+  }
+
+  .next-area__link:hover .next-area__arrow { transform: translateX(4px); }
+</style>

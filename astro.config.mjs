@@ -8,7 +8,7 @@ import sitemap from '@astrojs/sitemap';
  * on a future custom domain (https://example.com/ with BASE_PATH="/").
  */
 const site = process.env.SITE ?? 'https://jokekill.github.io';
-const base = process.env.BASE_PATH ?? '/jose.ph.otos';
+const base = process.env.BASE_PATH ?? '/Jose.ph.otos';
 
 export default defineConfig({
   site,

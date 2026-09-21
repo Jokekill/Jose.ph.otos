@@ -9,7 +9,7 @@ import { readFile, mkdir } from 'node:fs/promises';
 import { join, extname } from 'node:path';
 import { chromium } from 'playwright';
 
-const BASE = '/jose.ph.otos';
+const BASE = '/Jose.ph.otos';
 const DIST = new URL('../dist/', import.meta.url).pathname;
 const outDir = process.argv[2] ?? '/tmp/qa';
 

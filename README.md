@@ -32,10 +32,10 @@ project back up.
 
 ```bash
 npm install
-npm run dev          # http://localhost:4321/jose.ph.otos/
+npm run dev          # http://localhost:4321/Jose.ph.otos/
 ```
 
-Note the base path — the dev server serves the site under `/jose.ph.otos/`,
+Note the base path — the dev server serves the site under `/Jose.ph.otos/`,
 matching the GitHub Pages project site.
 
 ```bash

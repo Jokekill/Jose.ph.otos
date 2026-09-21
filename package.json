@@ -11,7 +11,13 @@
     "build:fast": "astro build",
     "preview": "astro preview",
     "check": "astro check",
-    "demo:generate": "node scripts/generate-demo-images.mjs"
+    "demo:generate": "node scripts/generate-demo-images.mjs",
+    "qa": "node scripts/qa-screenshots.mjs && node scripts/qa-lightbox.mjs && node scripts/qa-a11y.mjs && node scripts/qa-perf.mjs",
+    "qa:responsive": "node scripts/qa-screenshots.mjs",
+    "qa:lightbox": "node scripts/qa-lightbox.mjs",
+    "qa:a11y": "node scripts/qa-a11y.mjs",
+    "qa:perf": "node scripts/qa-perf.mjs",
+    "fonts:subset": "bash scripts/subset-fonts.sh"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.10",

@@ -14,6 +14,11 @@ jobs:
         with:
           node-version: 22
           cache: npm
-      - run: npm ci
+      - name: Install dependencies
+        # The QA harnesses are dev-only; CI never launches a browser, so skip
+        # Playwright's ~150 MB browser download.
+        env:
+          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: '1'
+        run: npm ci
       # `npm run build` runs `astro check` first, so this covers types too.
       - run: npm run build

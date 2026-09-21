@@ -11,7 +11,7 @@ import { join, extname } from 'node:path';
 import { chromium } from 'playwright';
 import AxeBuilder from '@axe-core/playwright';
 
-const BASE = '/jose.ph.otos';
+const BASE = '/Jose.ph.otos';
 const DIST = new URL('../dist/', import.meta.url).pathname;
 const T = { '.html': 'text/html;charset=utf-8', '.css': 'text/css', '.js': 'text/javascript', '.svg': 'image/svg+xml', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.webp': 'image/webp', '.avif': 'image/avif', '.woff2': 'font/woff2', '.xml': 'application/xml', '.txt': 'text/plain' };
 

@@ -31,7 +31,22 @@ jobs:
         id: pages
         uses: actions/configure-pages@v5
 
-      - run: npm ci
+      - name: Install dependencies
+        # The QA harnesses are dev-only; CI never launches a browser, so skip
+        # Playwright's ~150 MB browser download.
+        env:
+          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: '1'
+        run: npm ci
+
+      # Generating every AVIF/WebP/JPEG derivative from scratch takes minutes.
+      # Astro caches them by content hash, so a run that changes no photographs
+      # reuses the lot.
+      - name: Cache optimized images
+        uses: actions/cache@v4
+        with:
+          path: node_modules/.astro
+          key: astro-assets-${{ hashFiles('src/assets/**', 'src/data/portfolio*.ts') }}
+          restore-keys: astro-assets-
 
       - name: Build
         # `configure-pages` reports the real origin and base path, so the same

@@ -39,9 +39,19 @@ Note the base path — the dev server serves the site under `/Jose.ph.otos/`,
 matching the GitHub Pages project site.
 
 ```bash
-npm run check        # astro check (TypeScript + template diagnostics)
+npm run check          # astro check (TypeScript + template diagnostics)
 npm run demo:generate  # regenerate the temporary demo photographs
+
+npm run qa             # every check below, in order
+npm run qa:responsive  # each page at 360/390/430/tablet/laptop/desktop
+npm run qa:lightbox    # lightbox + mobile navigation behaviour
+npm run qa:a11y        # axe-core, plus link and asset integrity
+npm run qa:hero        # contrast of the hero text over its photographs
+npm run qa:perf        # LCP, CLS and transfer size
 ```
+
+The QA harnesses drive a real browser against `dist/`, so run `npm run build`
+first.
 
 ## Build
 
@@ -140,11 +150,40 @@ easier later.
 
 Categories are ordered by their own `order` field in `categories.ts`.
 
+## Homepage hero
+
+The homepage opens on a full-viewport slideshow. Slides crossfade and alternate
+between **two photographs side by side** and **one filling the screen**; the
+brand, claim and location sit over them in white, with the navigation overlaid
+and transparent until the hero scrolls past.
+
+The whole sequence is one array in `src/data/hero.ts`:
+
+```ts
+export const heroSlides: HeroSlide[] = [
+  { layout: 'split',  photos: ['portrety-02', 'koncerty-02'] },
+  { layout: 'single', photos: ['svatby-01'] },
+];
+```
+
+- `layout: 'split'` takes exactly two photo ids, `'single'` takes one.
+- ids refer to entries in `portfolio.real.ts` / `portfolio.demo.ts`; a typo
+  fails the build with the list of known ids rather than shipping a gap.
+- Below 48rem a split slide shows only its first photograph — two half-width
+  frames on a phone are two slivers.
+- `HERO_INTERVAL` in the same file sets how long each slide is held (6s).
+- Reordering the sequence is a data edit. No layout change is needed.
+
+**After changing the hero photographs, run `npm run qa:hero`.** White text over
+a picture only meets contrast requirements because of the dark scrim behind it,
+and a high-key photograph can push it under. That script measures the lightest
+pixel behind each piece of hero text and fails if it drops below its WCAG bar.
+
 ## Featured photos
 
 | Flag | Effect |
 | --- | --- |
-| `hero: true` | The big photograph on the homepage. Set it on **one** photo |
+| `hero: true` | Legacy single-hero flag, kept as a fallback. The homepage now uses the slideshow in `src/data/hero.ts` |
 | `featured: true` | Appears in "Vybrané práce" on the homepage |
 | `cover: true` | The category's photograph on the portfolio landing page. **One per category** |
 

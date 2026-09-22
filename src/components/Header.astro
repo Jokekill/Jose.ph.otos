@@ -2,10 +2,23 @@
 import { nav, site } from '../data/site';
 import { path, isActive } from '../lib/paths';
 
+interface Props {
+  /**
+   * Lay the header over a full-height hero: fixed, transparent, white type,
+   * flipping to the normal solid bar once the hero has scrolled past.
+   */
+  overlay?: boolean;
+}
+
+const { overlay = false } = Astro.props;
 const pathname = Astro.url.pathname;
 ---
 
-<header class="site-header" data-site-header>
+<header
+  class:list={['site-header', { 'site-header--overlay': overlay }]}
+  data-site-header
+  data-overlay={overlay ? '' : undefined}
+>
   <div class="site-header__inner shell">
     <a class="brand" href={path('/')} aria-label={`${site.brand} — domů`}>
       <span class="brand__mark">jose.ph.otos</span>
@@ -86,6 +99,40 @@ const pathname = Astro.url.pathname;
   /* Scroll is locked while the sheet is open, so a leftover hairline would
      just draw a rule across it. */
   :global(html[data-nav-open]) .site-header { box-shadow: none; }
+
+  /* --- Overlay mode: the header sits on top of the hero photographs ------ */
+  .site-header--overlay {
+    position: fixed;
+    left: 0;
+    right: 0;
+    background: transparent;
+    color: #fff;
+    transition: background-color var(--dur) var(--ease), color var(--dur) var(--ease);
+  }
+
+  .site-header--overlay:not([data-solid]) { box-shadow: none; }
+
+  .site-header--overlay:not([data-solid]) .nav-link { color: rgba(255, 255, 255, 0.82); }
+  .site-header--overlay:not([data-solid]) .nav-link:hover,
+  .site-header--overlay:not([data-solid]) .nav-link:focus-visible,
+  .site-header--overlay:not([data-solid]) .nav-link.is-current { color: #fff; }
+  .site-header--overlay:not([data-solid]) .nav-toggle__bars i { background: #fff; }
+
+  /* Past the hero it becomes the ordinary bar again. */
+  .site-header--overlay[data-solid] {
+    background: var(--c-bg);
+    color: var(--c-ink);
+  }
+
+  /* The open mobile sheet is white, so the header must be dark over it
+     whatever the hero is doing behind. */
+  :global(html[data-nav-open]) .site-header--overlay {
+    background: var(--c-bg);
+    color: var(--c-ink);
+  }
+  :global(html[data-nav-open]) .site-header--overlay .nav-toggle__bars i {
+    background: var(--c-ink);
+  }
 
   .site-header__inner {
     display: flex;
@@ -231,14 +278,28 @@ const pathname = Astro.url.pathname;
   const label = document.querySelector<HTMLElement>('[data-nav-toggle-label]');
   const panel = document.querySelector<HTMLElement>('[data-mobile-nav]');
 
-  /* --- hairline on scroll --- */
+  /* --- hairline on scroll, and the overlay -> solid flip --- */
   if (header) {
+    const isOverlay = header.hasAttribute('data-overlay');
+    const hero = document.querySelector<HTMLElement>('[data-hero]');
+
     const sync = () => {
       if (window.scrollY > 8) header.setAttribute('data-scrolled', '');
       else header.removeAttribute('data-scrolled');
+
+      if (!isOverlay) return;
+      // Flip as the bottom of the hero meets the bottom of the header, so the
+      // bar never sits half over a photograph and half over the page.
+      const threshold = hero
+        ? hero.offsetHeight - header.offsetHeight
+        : window.innerHeight - header.offsetHeight;
+      if (window.scrollY > threshold) header.setAttribute('data-solid', '');
+      else header.removeAttribute('data-solid');
     };
+
     sync();
     window.addEventListener('scroll', sync, { passive: true });
+    window.addEventListener('resize', sync, { passive: true });
   }
 
   /* --- mobile navigation --- */

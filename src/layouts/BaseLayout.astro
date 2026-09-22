@@ -13,9 +13,11 @@ interface Props {
   noindex?: boolean;
   /** Let the first section run to the very top (used by the homepage hero). */
   flush?: boolean;
+  /** Lay the header over a full-height hero instead of above it. */
+  overlayHeader?: boolean;
 }
 
-const { flush = false, ...seo } = Astro.props;
+const { flush = false, overlayHeader = false, ...seo } = Astro.props;
 ---
 
 <!doctype html>
@@ -25,7 +27,7 @@ const { flush = false, ...seo } = Astro.props;
   </head>
   <body>
     <a class="skip-link" href="#main">Přeskočit na obsah</a>
-    <Header />
+    <Header overlay={overlayHeader} />
     <main id="main" class:list={['site-main', { 'site-main--flush': flush }]}>
       <slot />
     </main>

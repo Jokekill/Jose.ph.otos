@@ -18,7 +18,11 @@ const claimLines = site.claim.split(', ');
     {
       slides.map((slide, i) => (
         <div
-          class:list={['hero__slide', `hero__slide--${slide.layout}`, { 'is-active': i === 0 }]}
+          class:list={[
+            'hero__slide',
+            `hero__slide--${slide.layout}`,
+            { 'is-active': i === 0, 'is-deferred': i !== 0 },
+          ]}
           data-hero-slide
           aria-hidden={i !== 0 ? 'true' : undefined}
         >
@@ -108,6 +112,13 @@ const claimLines = site.claim.split(', ');
   }
 
   .hero__slide.is-active { opacity: 1; }
+
+  /* Every slide sits inside the viewport, so `loading="lazy"` does not defer
+     the ones you cannot see — the browser fetches all of them on first paint.
+     Taking them out of the box entirely does, and the script below puts them
+     back once the page has loaded, well before the first crossfade. Without
+     JavaScript they stay out, which is right: nothing would advance them. */
+  .hero__slide.is-deferred { display: none; }
 
   .hero__slide--single { grid-template-columns: 1fr; }
   .hero__slide--split { grid-template-columns: 1fr 1fr; }
@@ -248,6 +259,9 @@ const claimLines = site.claim.split(', ');
     let current = 0;
     let timer: number | undefined;
 
+    /** Bring the deferred slides into the document so their images fetch. */
+    const hydrateSlides = () => slides.forEach((s) => s.classList.remove('is-deferred'));
+
     const show = (next: number) => {
       const i = (next + slides.length) % slides.length;
       if (i === current) return;
@@ -289,6 +303,12 @@ const claimLines = site.claim.split(', ');
       document.hidden ? stop() : start(),
     );
     reduced.addEventListener('change', start);
+
+    // A dot press before the page has finished loading still needs its slide.
+    dots.forEach((dot) => dot.addEventListener('pointerdown', hydrateSlides, { once: true }));
+
+    if (document.readyState === 'complete') hydrateSlides();
+    else window.addEventListener('load', hydrateSlides, { once: true });
 
     start();
   }

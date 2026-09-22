@@ -44,12 +44,18 @@ for (const dev of DEVICES) {
       deviceScaleFactor: dev.mobile ? 2 : 1,
     });
     const page = await ctx.newPage();
-    const bytes = { total: 0, image: 0, font: 0, css: 0, js: 0, html: 0 };
+    const bytes = { total: 0, image: 0, font: 0, css: 0, js: 0, html: 0, critical: 0 };
+    // Bytes that arrive before `load` are the ones a visitor waits on. The
+    // homepage hero deliberately pushes its off-screen slides past that line,
+    // so `total` alone would hide the difference that change made.
+    let loaded = false;
+    page.on('load', () => { loaded = true; });
     page.on('response', async (res) => {
       try {
         const buf = await res.body();
         const ct = res.headers()['content-type'] ?? '';
         bytes.total += buf.length;
+        if (!loaded) bytes.critical += buf.length;
         if (ct.startsWith('image/')) bytes.image += buf.length;
         else if (ct.startsWith('font/')) bytes.font += buf.length;
         else if (ct.includes('css')) bytes.css += buf.length;
@@ -90,8 +96,9 @@ for (const dev of DEVICES) {
     const kb = (n) => `${(n / 1024).toFixed(0)}k`;
     console.log(
       `  ${url.padEnd(22)} LCP ${String(vitals.lcp).padStart(5)}ms  CLS ${String(vitals.cls).padEnd(6)}  ` +
-        `total ${kb(bytes.total).padStart(6)}  img ${kb(bytes.image).padStart(6)}  ` +
-        `font ${kb(bytes.font).padStart(5)}  css ${kb(bytes.css).padStart(5)}  js ${kb(bytes.js)}`,
+        `pre-load ${kb(bytes.critical).padStart(6)}  total ${kb(bytes.total).padStart(6)}  ` +
+        `img ${kb(bytes.image).padStart(6)}  font ${kb(bytes.font).padStart(5)}  ` +
+        `css ${kb(bytes.css).padStart(5)}  js ${kb(bytes.js)}`,
     );
     await ctx.close();
   }

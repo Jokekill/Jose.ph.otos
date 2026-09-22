@@ -2,38 +2,19 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import PhotoFigure from '../components/PhotoFigure.astro';
 import Gallery from '../components/Gallery.astro';
-import { site, directContact } from '../data/site';
-import { heroPhoto, featuredPhotos, activeCategories, categoryCover } from '../data/portfolio';
+import HeroSlideshow from '../components/HeroSlideshow.astro';
+import { directContact } from '../data/site';
+import { featuredPhotos, activeCategories, categoryCover } from '../data/portfolio';
 import { path } from '../lib/paths';
 
-const hero = heroPhoto();
 const featured = featuredPhotos(7);
 ---
 
-<BaseLayout flush>
-  <!-- Masthead: name, craft, claim, place. Four lines, then photography. -->
-  <section class="masthead shell">
-    <p class="label masthead__eyebrow">{site.name} — {site.role}</p>
-    <h1 class="masthead__claim serif">{site.claim}</h1>
-    <p class="masthead__place">{site.location}</p>
-  </section>
+<BaseLayout flush overlayHeader>
+  <HeroSlideshow />
 
-  {
-    hero && (
-      <section class="hero shell shell--wide" aria-label="Úvodní fotografie">
-        <PhotoFigure
-          photo={hero}
-          priority
-          sizes="(max-width: 90rem) 100vw, 1440px"
-          widths={[640, 960, 1280, 1600, 2000]}
-          class="hero__photo"
-        />
-      </section>
-    )
-  }
-
-  <section class="section shell shell--wide" aria-labelledby="vybrane">
-    <div class="section-head">
+  <section class="section section--first shell shell--wide" aria-labelledby="vybrane">
+    <div class="section-head reveal">
       <h2 id="vybrane">Vybrané práce</h2>
       <a class="link link--quiet label" href={path('/portfolio/')}>Celé portfolio</a>
     </div>
@@ -41,7 +22,7 @@ const featured = featuredPhotos(7);
   </section>
 
   <section class="section shell shell--wide" aria-labelledby="oblasti">
-    <div class="section-head">
+    <div class="section-head reveal">
       <h2 id="oblasti">Co fotím</h2>
     </div>
 
@@ -50,7 +31,7 @@ const featured = featuredPhotos(7);
         activeCategories.map((category, i) => {
           const cover = categoryCover(category.slug);
           return (
-            <li class="cats__item reveal" style={`--reveal-delay:${Math.min(i, 3) * 70}ms`}>
+            <li class="cats__item reveal" style={`--reveal-delay:${Math.min(i, 4) * 90}ms`}>
               <a class="cats__link" href={path(`/portfolio/${category.slug}/`)}>
                 {cover && (
                   <PhotoFigure
@@ -72,11 +53,11 @@ const featured = featuredPhotos(7);
   </section>
 
   <section class="section shell shell--content closing">
-    <p class="lead">
+    <p class="lead reveal">
       Máte v hlavě focení, o kterém zatím nevíte, jak přesně má vypadat? To je úplně
       v pořádku — většinou se to vyjasní během pár zpráv.
     </p>
-    <a class="cta" href={path('/kontakt/')}>
+    <a class="cta reveal" style="--reveal-delay:100ms" href={path('/kontakt/')}>
       Napsat Pepovi
       <span class="cta__arrow" aria-hidden="true">→</span>
     </a>
@@ -94,38 +75,19 @@ const featured = featuredPhotos(7);
 </BaseLayout>
 
 <style>
-  .masthead {
-    padding-top: clamp(2.5rem, 1.4rem + 4.4vw, 5.5rem);
-    padding-bottom: clamp(1.75rem, 1rem + 3vw, 3.5rem);
-    display: grid;
-    gap: var(--s-4);
-    max-width: var(--w-wide);
-  }
+  
 
-  .masthead__eyebrow { margin: 0; }
+  
 
-  .masthead__claim {
-    font-size: var(--t-display);
-    line-height: 0.98;
-    letter-spacing: -0.025em;
-    max-width: 16ch;
-    margin: 0;
-    font-weight: 400;
-  }
+  
 
-  .masthead__place {
-    margin: 0;
-    color: var(--c-ink-muted);
-    font-size: var(--t-body);
-  }
+  
 
-  .hero :global(.hero__photo) {
-    /* The hero keeps its own ratio on desktop but never gets so tall on a phone
-       that the first screen shows nothing but sky. */
-    max-height: 78svh;
-  }
+  
 
   .section { padding-top: var(--section-gap); }
+
+  .section--first { padding-top: var(--section-gap-lg); }
 
   /* --- Category entries: photograph, name, one line. No cards. ----------- */
   .cats {
@@ -154,10 +116,7 @@ const featured = featuredPhotos(7);
   .cats__link :global(.photo) { aspect-ratio: 4 / 5; }
 
   @media (hover: hover) {
-    .cats__link :global(.photo__img) {
-      transition: transform var(--dur-slow) var(--ease);
-    }
-    .cats__link:hover :global(.photo__img) { transform: scale(1.02); }
+    .cats__link:hover :global(.photo__img) { opacity: 0.78; }
   }
 
   .cats__link:focus-visible {
@@ -183,7 +142,5 @@ const featured = featuredPhotos(7);
     .cats__item:first-child :global(.photo) { aspect-ratio: 16 / 10; }
   }
 
-  @media (prefers-reduced-motion: reduce) {
-    .cats__link:hover :global(.photo__img) { transform: none; }
-  }
+
 </style>

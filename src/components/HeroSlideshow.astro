@@ -1,0 +1,315 @@
+---
+import { Picture } from 'astro:assets';
+import { resolvedHeroSlides, HERO_INTERVAL } from '../data/hero';
+import { site } from '../data/site';
+
+const slides = resolvedHeroSlides;
+const claimLines = site.claim.split(', ');
+---
+
+<section
+  class="hero"
+  data-hero
+  data-interval={HERO_INTERVAL}
+  aria-roledescription="prezentace"
+  aria-label="Ukázky z portfolia"
+>
+  <div class="hero__stage">
+    {
+      slides.map((slide, i) => (
+        <div
+          class:list={[
+            'hero__slide',
+            `hero__slide--${slide.layout}`,
+            { 'is-active': i === 0, 'is-deferred': i !== 0 },
+          ]}
+          data-hero-slide
+          aria-hidden={i !== 0 ? 'true' : undefined}
+        >
+          {slide.photos.map((photo) => (
+            <div class="hero__frame">
+              <Picture
+                src={photo.image}
+                alt={photo.alt}
+                widths={[640, 960, 1280, 1920, 2400]}
+                sizes={slide.layout === 'split' ? '(max-width: 48rem) 100vw, 50vw' : '100vw'}
+                formats={['avif', 'webp']}
+                fallbackFormat="jpeg"
+                quality={78}
+                /* Only the first slide is part of the first paint. */
+                loading={i === 0 ? 'eager' : 'lazy'}
+                fetchpriority={i === 0 ? 'high' : 'auto'}
+                decoding={i === 0 ? 'sync' : 'async'}
+                class="hero__img"
+                pictureAttributes={{ class: 'hero__picture' }}
+              />
+            </div>
+          ))}
+        </div>
+      ))
+    }
+  </div>
+
+  <div class="hero__scrim" aria-hidden="true"></div>
+
+  <div class="hero__content">
+    <p class="hero__brand">{site.name} — {site.role}</p>
+    <h1 class="hero__claim serif">
+      {claimLines.map((line, i) => <span class="hero__line">{i === 0 ? `${line},` : line}</span>)}
+    </h1>
+    <p class="hero__place">{site.location}</p>
+  </div>
+
+  {
+    slides.length > 1 && (
+      <div class="hero__dots" role="group" aria-label="Volba ukázky">
+        {slides.map((_, i) => (
+          <button
+            class:list={['hero__dot', { 'is-active': i === 0 }]}
+            type="button"
+            data-hero-dot
+            data-index={i}
+            aria-label={`Ukázka ${i + 1} z ${slides.length}`}
+            aria-pressed={i === 0 ? 'true' : 'false'}
+          />
+        ))}
+      </div>
+    )
+  }
+</section>
+
+<style>
+  .hero {
+    position: relative;
+    /* svh, not vh: on a phone the browser chrome must not push the bottom of
+       the hero below the fold. */
+    height: 100svh;
+    min-height: 32rem;
+    overflow: hidden;
+    background: #101010;
+    isolation: isolate;
+  }
+
+  .hero__stage {
+    position: absolute;
+    inset: 0;
+  }
+
+  /* Slides are stacked and crossfaded. Nothing slides or scales — the
+     reference animates opacity only, and so do we. */
+  .hero__slide {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    /* An implicit grid row is auto-sized, so the frame — and the image's
+       height:100% inside it — collapses to the picture's intrinsic height
+       instead of filling the screen. Naming the row fixes that. */
+    grid-template-rows: 1fr;
+    gap: 0;
+    opacity: 0;
+    transition: opacity 1.2s var(--ease);
+    will-change: opacity;
+  }
+
+  .hero__slide.is-active { opacity: 1; }
+
+  /* Every slide sits inside the viewport, so `loading="lazy"` does not defer
+     the ones you cannot see — the browser fetches all of them on first paint.
+     Taking them out of the box entirely does, and the script below puts them
+     back once the page has loaded, well before the first crossfade. Without
+     JavaScript they stay out, which is right: nothing would advance them. */
+  .hero__slide.is-deferred { display: none; }
+
+  .hero__slide--single { grid-template-columns: 1fr; }
+  .hero__slide--split { grid-template-columns: 1fr 1fr; }
+
+  .hero__frame {
+    position: relative;
+    overflow: hidden;
+    min-width: 0;
+  }
+
+  /* <Picture> wraps the <img>; without this the wrapper stays auto-height and
+     the image's height:100% resolves against nothing. */
+  .hero__picture {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  .hero__img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  /* Guarantees the white type stays legible over any photograph, including a
+     high-key one. Darker at the top (behind the navigation) and through the
+     middle (behind the claim) than at the edges. */
+  .hero__scrim {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(78% 62% at 50% 50%, rgba(0, 0, 0, 0.52), rgba(0, 0, 0, 0) 82%),
+      linear-gradient(
+        180deg,
+        rgba(0, 0, 0, 0.52) 0%,
+        rgba(0, 0, 0, 0.3) 28%,
+        rgba(0, 0, 0, 0.3) 68%,
+        rgba(0, 0, 0, 0.44) 100%
+      );
+  }
+
+  .hero__content {
+    position: relative;
+    z-index: 1;
+    height: 100%;
+    display: grid;
+    align-content: center;
+    justify-items: center;
+    text-align: center;
+    gap: var(--s-4);
+    padding: var(--header-h) var(--gutter) var(--s-9);
+    color: #fff;
+  }
+
+  .hero__brand {
+    margin: 0;
+    font-size: var(--t-meta);
+    letter-spacing: var(--tr-label);
+    text-transform: uppercase;
+    font-weight: var(--w-regular);
+    color: rgba(255, 255, 255, 0.92);
+  }
+
+  .hero__claim {
+    margin: 0;
+    font-weight: 400;
+    font-size: clamp(2rem, 1.1rem + 4.2vw, 4.75rem);
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+    display: grid;
+    gap: 0.1em;
+    max-width: 18ch;
+  }
+
+  .hero__line { display: block; }
+
+  .hero__place {
+    margin: 0;
+    font-size: var(--t-small);
+    color: rgba(255, 255, 255, 0.88);
+  }
+
+  .hero__dots {
+    position: absolute;
+    z-index: 2;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: max(var(--s-5), env(safe-area-inset-bottom));
+    display: flex;
+    gap: var(--s-2);
+  }
+
+  .hero__dot {
+    width: 44px;
+    height: 44px;
+    display: grid;
+    place-items: center;
+  }
+
+  .hero__dot::before {
+    content: '';
+    width: 28px;
+    height: 1px;
+    background: rgba(255, 255, 255, 0.45);
+    transition: background-color var(--dur) var(--ease);
+  }
+
+  .hero__dot.is-active::before,
+  .hero__dot:hover::before { background: #fff; }
+
+  .hero__dot:focus-visible {
+    outline: 2px solid #fff;
+    outline-offset: -6px;
+  }
+
+  @media (max-width: 47.999rem) {
+    /* Two half-width photographs at 390px are two slivers. On a phone the
+       split slide shows its first photograph full-bleed instead. */
+    .hero__slide--split { grid-template-columns: 1fr; }
+    .hero__slide--split .hero__frame:nth-child(2) { display: none; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero__slide { transition: none; }
+  }
+</style>
+
+<script>
+  const hero = document.querySelector<HTMLElement>('[data-hero]');
+  if (hero) {
+    const slides = [...hero.querySelectorAll<HTMLElement>('[data-hero-slide]')];
+    const dots = [...hero.querySelectorAll<HTMLButtonElement>('[data-hero-dot]')];
+    const interval = Number(hero.dataset.interval ?? 6000);
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+    let current = 0;
+    let timer: number | undefined;
+
+    /** Bring the deferred slides into the document so their images fetch. */
+    const hydrateSlides = () => slides.forEach((s) => s.classList.remove('is-deferred'));
+
+    const show = (next: number) => {
+      const i = (next + slides.length) % slides.length;
+      if (i === current) return;
+      slides[current]?.classList.remove('is-active');
+      slides[current]?.setAttribute('aria-hidden', 'true');
+      dots[current]?.classList.remove('is-active');
+      dots[current]?.setAttribute('aria-pressed', 'false');
+
+      current = i;
+
+      slides[current]?.classList.add('is-active');
+      slides[current]?.removeAttribute('aria-hidden');
+      dots[current]?.classList.add('is-active');
+      dots[current]?.setAttribute('aria-pressed', 'true');
+    };
+
+    const stop = () => {
+      if (timer !== undefined) window.clearInterval(timer);
+      timer = undefined;
+    };
+
+    const start = () => {
+      stop();
+      // Someone who asked for less motion gets a still first frame, and the
+      // dots still let them look through the rest by hand.
+      if (reduced.matches || slides.length < 2) return;
+      timer = window.setInterval(() => show(current + 1), interval);
+    };
+
+    dots.forEach((dot) =>
+      dot.addEventListener('click', () => {
+        show(Number(dot.dataset.index));
+        start(); // a manual pick restarts the dwell, rather than cutting it short
+      }),
+    );
+
+    // Don't advance in a tab nobody is looking at.
+    document.addEventListener('visibilitychange', () =>
+      document.hidden ? stop() : start(),
+    );
+    reduced.addEventListener('change', start);
+
+    // A dot press before the page has finished loading still needs its slide.
+    dots.forEach((dot) => dot.addEventListener('pointerdown', hydrateSlides, { once: true }));
+
+    if (document.readyState === 'complete') hydrateSlides();
+    else window.addEventListener('load', hydrateSlides, { once: true });
+
+    start();
+  }
+</script>

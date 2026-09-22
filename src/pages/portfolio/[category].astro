@@ -20,11 +20,11 @@ const next = activeCategories[(index + 1) % activeCategories.length];
 
 <BaseLayout title={category.title} description={category.description}>
   <section class="shell shell--wide page-head">
-    <nav class="crumb" aria-label="Drobečková navigace">
+    <nav class="crumb reveal" aria-label="Drobečková navigace">
       <a class="link link--quiet label" href={path('/portfolio/')}>Portfolio</a>
     </nav>
-    <h1>{category.title}</h1>
-    <p class="prose">{category.description}</p>
+    <h1 class="reveal" style="--reveal-delay:90ms">{category.title}</h1>
+    <p class="prose reveal" style="--reveal-delay:180ms">{category.description}</p>
   </section>
 
   <div class="shell shell--wide">
@@ -33,7 +33,7 @@ const next = activeCategories[(index + 1) % activeCategories.length];
 
   {
     next && next.slug !== category.slug && (
-      <nav class="shell shell--wide next-area" aria-label="Další kategorie">
+      <nav class="shell shell--wide next-area reveal" aria-label="Další kategorie">
         <hr class="rule" />
         <a class="next-area__link" href={path(`/portfolio/${next.slug}/`)}>
           <span class="label">Další</span>

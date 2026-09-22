@@ -41,7 +41,7 @@ const items = photos.map((photo, i) => {
         data-orientation={photo.orientation}
         style={`--ar:${photo.aspectRatio.toFixed(4)}`}
       >
-        <div class="reveal" style={`--reveal-delay:${Math.min(i, 3) * 70}ms`}>
+        <div class="reveal" style={`--reveal-delay:${Math.min(i, 4) * 90}ms`}>
           <PhotoFigure
             photo={photo}
             index={i}

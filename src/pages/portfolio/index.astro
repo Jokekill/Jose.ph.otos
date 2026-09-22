@@ -10,8 +10,8 @@ import { path } from '../../lib/paths';
   description="Portréty, svatby, koncerty, eventy a produktové focení. Výběr z práce fotografa Pepy Dočkala."
 >
   <section class="shell shell--wide page-head">
-    <h1>Portfolio</h1>
-    <p class="lead">
+    <h1 class="reveal">Portfolio</h1>
+    <p class="lead reveal" style="--reveal-delay:120ms">
       Pět oblastí, ve kterých se pohybuji nejčastěji. Pokud to, co potřebujete,
       mezi nimi nenajdete, napište — spousta focení se stejně nevejde do škatulky.
     </p>
@@ -77,8 +77,7 @@ import { path } from '../../lib/paths';
   .areas__media :global(.photo) { aspect-ratio: 3 / 2; }
 
   @media (hover: hover) {
-    .areas__link :global(.photo__img) { transition: transform var(--dur-slow) var(--ease); }
-    .areas__link:hover :global(.photo__img) { transform: scale(1.02); }
+    .areas__link:hover :global(.photo__img) { opacity: 0.78; }
   }
 
   .areas__title {
@@ -107,7 +106,5 @@ import { path } from '../../lib/paths';
     }
   }
 
-  @media (prefers-reduced-motion: reduce) {
-    .areas__link:hover :global(.photo__img) { transform: none; }
-  }
+
 </style>

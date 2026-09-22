@@ -4,25 +4,32 @@
    Colour comes from the photographs, never from the UI.
    ========================================================================= */
 
-/* ---------- Fonts (self-hosted, latin + latin-ext for Czech diacritics) --- */
+/* ---------- Fonts (self-hosted, latin + latin-ext for Czech diacritics) ---
+
+   Montserrat carries the site, Bodoni Moda is the display accent — the same
+   roles the reference site gives its sans and its serif. Its own two accent
+   faces (Noir et Blanc, Butler) are licensed to that site, so they are not
+   ours to copy; Montserrat is what it actually sets almost everything in, and
+   it is OFL-licensed, so this is the real typeface rather than a lookalike.
+   -------------------------------------------------------------------------- */
 
 @font-face {
-  font-family: 'Inter';
+  font-family: 'Montserrat';
   font-style: normal;
   font-weight: 100 900;
   font-display: swap;
-  src: url('/fonts/inter-latin-wght-normal.woff2') format('woff2-variations');
+  src: url('/fonts/montserrat-latin-wght-normal.woff2') format('woff2-variations');
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
     U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2190-2193,
     U+2212, U+2215, U+FEFF, U+FFFD;
 }
 
 @font-face {
-  font-family: 'Inter';
+  font-family: 'Montserrat';
   font-style: normal;
   font-weight: 100 900;
   font-display: swap;
-  src: url('/fonts/inter-latin-ext-wght-normal.woff2') format('woff2-variations');
+  src: url('/fonts/montserrat-latin-ext-wght-normal.woff2') format('woff2-variations');
   /* Latin Extended-A — Czech ě š č ř ž ů ď ť ň and neighbours.
      Must match scripts/subset-fonts.sh, which trims the file to this range. */
   unicode-range: U+0100-017F, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7,
@@ -31,24 +38,22 @@
 }
 
 @font-face {
-  font-family: 'Instrument Serif';
+  font-family: 'Bodoni Moda';
   font-style: normal;
-  font-weight: 400;
+  font-weight: 400 900;
   font-display: swap;
-  src: url('/fonts/instrument-serif-latin-400-normal.woff2') format('woff2');
+  src: url('/fonts/bodoni-moda-latin-wght-normal.woff2') format('woff2-variations');
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
     U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2190-2193,
     U+2212, U+2215, U+FEFF, U+FFFD;
 }
 
 @font-face {
-  font-family: 'Instrument Serif';
+  font-family: 'Bodoni Moda';
   font-style: normal;
-  font-weight: 400;
+  font-weight: 400 900;
   font-display: swap;
-  src: url('/fonts/instrument-serif-latin-ext-400-normal.woff2') format('woff2');
-  /* Latin Extended-A — Czech ě š č ř ž ů ď ť ň and neighbours.
-     Must match scripts/subset-fonts.sh, which trims the file to this range. */
+  src: url('/fonts/bodoni-moda-latin-ext-wght-normal.woff2') format('woff2-variations');
   unicode-range: U+0100-017F, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7,
     U+02DD-02FF, U+0304, U+0308, U+0329, U+2020, U+20A0-20BF, U+2113,
     U+2C60-2C7F;
@@ -73,9 +78,15 @@
   --c-lightbox-ink: #f2f2f2;
 
   /* Typefaces */
-  --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI',
+  --font-sans: 'Montserrat', ui-sans-serif, system-ui, -apple-system, 'Segoe UI',
     Roboto, 'Helvetica Neue', Arial, sans-serif;
-  --font-serif: 'Instrument Serif', ui-serif, Georgia, 'Times New Roman', serif;
+  --font-serif: 'Bodoni Moda', ui-serif, Georgia, 'Times New Roman', serif;
+
+  /* Weights. Montserrat is set light for running text, which is what gives the
+     reference site its airy feel; 500 is the heaviest the UI ever goes. */
+  --w-light: 300;
+  --w-regular: 400;
+  --w-medium: 500;
 
   /* Fluid type scale — 360px .. 1440px viewport */
   --t-micro: 0.6875rem;                                  /* 11px  labels      */
@@ -91,14 +102,17 @@
   /* Line heights */
   --lh-tight: 1.04;
   --lh-snug: 1.2;
-  --lh-normal: 1.5;
+  --lh-normal: 1.6;
   --lh-relaxed: 1.7;
 
   /* Tracking */
-  --tr-display: -0.03em;
+  --tr-display: -0.01em;
   --tr-heading: -0.02em;
-  --tr-body: 0;
-  --tr-label: 0.09em;
+  --tr-body: 0.03em;
+  /* The signature of the reference design: uppercase labels and navigation set
+     with very wide tracking. This one value does most of the visual work. */
+  --tr-label: 0.2em;
+  --tr-label-wide: 0.3em;
 
   /* Spacing scale (8px base, exponential-ish) */
   --s-1: 0.25rem;
@@ -124,11 +138,15 @@
   --w-prose: 62ch;       /* running text — never wider                  */
   --gallery-gap: clamp(0.75rem, 0.35rem + 1.7vw, 2rem);
 
-  /* Motion */
-  --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
-  --dur-fast: 160ms;
-  --dur: 320ms;
-  --dur-slow: 640ms;
+  /* Motion.
+     The reference site animates opacity, colour and fill — nothing else — and
+     uses a single 0.5s duration everywhere, with the browser's default easing.
+     We follow that vocabulary exactly; what we add is reach (more elements
+     fade in) and a stagger, never a new kind of movement. */
+  --ease: ease;
+  --dur-fast: 0.25s;
+  --dur: 0.5s;
+  --dur-slow: 0.5s;
 
   --header-h: 4rem;
 }
@@ -157,6 +175,7 @@ body {
   color: var(--c-ink);
   font-family: var(--font-sans);
   font-size: var(--t-body);
+  font-weight: var(--w-light);
   line-height: var(--lh-normal);
   letter-spacing: var(--tr-body);
   font-synthesis-weight: none;
@@ -211,7 +230,7 @@ ol[role='list'] {
 /* ---------- Typography --------------------------------------------------- */
 
 h1, h2, h3, h4 {
-  font-weight: 500;
+  font-weight: var(--w-regular);
   line-height: var(--lh-snug);
   letter-spacing: var(--tr-heading);
   text-wrap: balance;
@@ -247,12 +266,13 @@ a {
 }
 
 .prose > * + * { margin-top: 1.1em; }
-.prose strong { color: var(--c-ink); font-weight: 500; }
+.prose strong { color: var(--c-ink); font-weight: var(--w-medium); }
 
 .lead {
   font-size: var(--t-lead);
-  line-height: 1.45;
-  letter-spacing: -0.015em;
+  font-weight: var(--w-light);
+  line-height: 1.5;
+  letter-spacing: 0.01em;
   color: var(--c-ink);
   max-width: 34ch;
   text-wrap: pretty;
@@ -270,7 +290,7 @@ a {
   letter-spacing: var(--tr-label);
   text-transform: uppercase;
   color: var(--c-ink-muted);
-  font-weight: 500;
+  font-weight: var(--w-regular);
 }
 
 .muted { color: var(--c-ink-muted); }
@@ -316,7 +336,7 @@ a {
   font-size: var(--t-small);
   letter-spacing: var(--tr-label);
   text-transform: uppercase;
-  font-weight: 500;
+  font-weight: var(--w-regular);
   color: var(--c-ink);
   padding-block: var(--s-3);
   border-bottom: 1px solid var(--c-line-strong);
@@ -380,15 +400,15 @@ a {
 
 html.js .reveal {
   opacity: 0;
-  transform: translateY(12px);
-  transition: opacity var(--dur-slow) var(--ease), transform var(--dur-slow) var(--ease);
+  /* Opacity only — no rise, no scale. The reference site moves nothing; it
+     only fades. The stagger below is what makes a gallery feel alive. */
+  transition: opacity var(--dur) var(--ease);
   transition-delay: var(--reveal-delay, 0ms);
-  will-change: opacity, transform;
+  will-change: opacity;
 }
 
 html.js .reveal.is-visible {
   opacity: 1;
-  transform: none;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -405,7 +425,6 @@ html.js .reveal.is-visible {
 
   html.js .reveal {
     opacity: 1 !important;
-    transform: none !important;
   }
 }
 

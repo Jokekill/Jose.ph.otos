@@ -19,14 +19,14 @@ import { path } from '../lib/paths';
   description="Napište Pepovi Dočkalovi. Focení v Praze, Brně a kdekoliv jinde."
 >
   <section class="shell shell--content kontakt">
-    <h1 class="kontakt__title">Napište mi</h1>
+    <h1 class="kontakt__title reveal">Napište mi</h1>
 
-    <p class="lead">
+    <p class="lead reveal" style="--reveal-delay:120ms">
       Stačí pár vět — co, kdy a zhruba kde. Ozvu se obvykle do dvou dnů
       a doladíme zbytek.
     </p>
 
-    <ul class="channels" role="list">
+    <ul class="channels reveal" style="--reveal-delay:200ms" role="list">
       {
         contacts.map((c) => (
           <li class="channel">
@@ -57,7 +57,7 @@ import { path } from '../lib/paths';
       </li>
     </ul>
 
-    <p class="kontakt__note muted">
+    <p class="kontakt__note muted reveal" style="--reveal-delay:280ms">
       Fotím i mimo Prahu a Brno — cestovné se řeší individuálně podle vzdálenosti.
       Ceny najdete v <a class="link" href={path('/cenik/')}>ceníku</a>.
     </p>
